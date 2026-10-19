@@ -59,7 +59,7 @@ AddDefaultCharset utf-8
 #   RewriteCond %{HTTPS} !=on
 #   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
 #
-#   # www → без www (example.ru заменить на домен из SITE_URL в build.sh)
+#   # www → без www (домен подставляет build.sh из SITE_URL)
 #   RewriteCond %{HTTP_HOST} ^www\.example\.ru$ [NC]
 #   RewriteRule ^ https://example.ru%{REQUEST_URI} [R=301,L]
 # </IfModule>

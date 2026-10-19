@@ -643,6 +643,7 @@ a[href^='tel:'] {
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  min-height: 2.75rem;
   margin-right: auto;
   color: var(--c-ivory);
   line-height: 1.25;
@@ -687,7 +688,9 @@ a[href^='tel:'] {
   order: 1;
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
+  min-width: 2.75rem;
   min-height: 2.75rem;
   margin-right: -0.5rem;
   padding-inline: 0.5rem;
