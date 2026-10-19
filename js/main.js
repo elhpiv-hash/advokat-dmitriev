@@ -159,7 +159,7 @@
   /* ----- Подсветка активного пункта меню ----- */
 
   function initScrollSpy() {
-    const links = Array.prototype.slice.call(document.querySelectorAll('[data-spy]'));
+    const links = Array.prototype.slice.call(document.querySelectorAll('a[data-spy]'));
     if (!links.length || !supportsObserver) return;
 
     const linkById = new Map();
@@ -184,7 +184,7 @@
     }
 
     /* Наблюдаем за всеми секциями, а не только за теми, что есть в меню:
-       в «Проверке» подсветка должна сниматься. Секция с data-spy относится
+       в «Проверке» подсветка должна сниматься. Секция с data-nav относится
        к пункту меню с этим якорем: три главы направлений подсвечивают один
        пункт «Направления».
        rootMargin оставляет тонкую горизонтальную полосу у середины экрана:
@@ -193,7 +193,7 @@
     const observer = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (!entry.isIntersecting) return;
-        const key = entry.target.dataset.spy || entry.target.id;
+        const key = entry.target.dataset.nav || entry.target.id;
         setActive(linkById.get(key) || null);
       });
     }, { rootMargin: '-45% 0px -54% 0px' });

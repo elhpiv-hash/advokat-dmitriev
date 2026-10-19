@@ -39,7 +39,7 @@
   <!-- Подключаются только минифицированные файлы (их собирает build.sh).
        ?v= — хеш содержимого файла, его тоже ставит build.sh: статика кэшируется
        на год (immutable), и новый хеш сразу обходит кэш. -->
-  <link rel="stylesheet" href="css/style.min.css?v=0e9769c97a">
+  <link rel="stylesheet" href="css/style.min.css?v=6f99d81db2">
 
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -118,7 +118,7 @@
   </script>
 
   <!-- defer: скрипт качается параллельно с разбором HTML и выполняется после него. -->
-  <script src="js/main.min.js?v=4a81009e2c" defer></script>
+  <script src="js/main.min.js?v=bf4b1dbf7b" defer></script>
 </head>
 <body>
   <!-- Типографика: неразрывные пробелы записаны сущностью &nbsp;, чтобы их было
@@ -232,7 +232,7 @@
     <section class="hero theme-dark" id="top" aria-labelledby="hero-title">
       <div class="hero__inner container">
         <div class="hero__content">
-          <p class="hero__meta">Адвокат Адвокатской палаты города Санкт-Петербурга, рег.&nbsp;№&nbsp;78/5868</p>
+          <p class="hero__meta">Адвокат Адвокатской палаты города <span class="nowrap">Санкт-Петербурга</span>, рег.&nbsp;№&nbsp;78/5868</p>
 
           <!-- Заголовок без анимации появления: это кандидат в LCP, а элемент
                с opacity: 0 браузер не засчитывает отрисованным. -->
@@ -241,7 +241,7 @@
             <span class="hero__given">Александр Николаевич</span>
           </h1>
 
-          <p class="hero__lead" data-intro>Арбитражные споры, взыскание задолженности, семейные дела и&nbsp;раздел имущества. Стаж&nbsp;— более 22&nbsp;лет.</p>
+          <p class="hero__lead" data-intro>Арбитражные споры, взыскание задолженности, семейные дела и&nbsp;раздел имущества. <span class="nowrap">Стаж&nbsp;— более 22&nbsp;лет.</span></p>
 
           <div class="hero__actions" data-hero-actions data-intro>
             <a class="btn btn--primary" href="tel:+79217300305" data-site="phone-link">
@@ -273,7 +273,7 @@
           <ol class="index" role="list">
             <li>
               <a class="index__link" href="#arbitration">
-                <span class="index__num" aria-hidden="true">I</span>
+                <span class="index__num numeral" aria-hidden="true">I</span>
                 <span class="index__body">
                   <span class="index__name">Арбитражные споры</span>
                   <span class="index__desc">Арбитражный суд, споры по&nbsp;долгам, претензии</span>
@@ -283,7 +283,7 @@
             </li>
             <li>
               <a class="index__link" href="#debts">
-                <span class="index__num" aria-hidden="true">II</span>
+                <span class="index__num numeral" aria-hidden="true">II</span>
                 <span class="index__body">
                   <span class="index__name">Взыскание задолженности</span>
                   <span class="index__desc">Долги, суд общей юрисдикции, работа с&nbsp;приставами</span>
@@ -293,7 +293,7 @@
             </li>
             <li>
               <a class="index__link" href="#family">
-                <span class="index__num" aria-hidden="true">III</span>
+                <span class="index__num numeral" aria-hidden="true">III</span>
                 <span class="index__body">
                   <span class="index__name">Семейные дела и&nbsp;раздел имущества</span>
                   <span class="index__desc">Раздел имущества, алименты, наследство</span>
@@ -331,13 +331,13 @@
     <!-- ===== 4–6. НАПРАВЛЕНИЯ ===== -->
     <!-- Три направления — три «главы» одного документа: подряд на светлом граните,
          разделены двойной линейкой. Обёртка с id — цель пункта меню «Направления»;
-         data-spy у секций говорит подсветке меню, к какому пункту они относятся. -->
+         data-nav у секций говорит подсветке меню, к какому пункту они относятся. -->
     <div class="chapters" id="directions">
 
       <!-- ----- I. Арбитражные споры ----- -->
-      <section class="section chapter theme-light" id="arbitration" data-spy="directions" aria-labelledby="arbitration-title">
+      <section class="section chapter theme-light" id="arbitration" data-nav="directions" aria-labelledby="arbitration-title">
         <div class="container chapter__grid">
-          <p class="chapter__num" aria-hidden="true">I</p>
+          <p class="chapter__num" aria-hidden="true"><span class="numeral">I</span></p>
 
           <div class="chapter__head">
             <h2 class="section__title chapter__title" id="arbitration-title">Арбитражные споры</h2>
@@ -360,7 +360,7 @@
           </ul>
 
           <p class="chapter__note">
-            <a class="link-arrow" href="#practice">Номера арбитражных дел&nbsp;— в&nbsp;разделе «Практика»<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
+            <a class="link-arrow" href="#practice">Номера дел&nbsp;— в&nbsp;разделе «Практика»<svg class="icon" aria-hidden="true"><use href="#i-arrow-right"/></svg></a>
           </p>
 
           <aside class="fee" aria-labelledby="arbitration-fee">
@@ -392,9 +392,9 @@
       </section>
 
       <!-- ----- II. Взыскание задолженности ----- -->
-      <section class="section chapter theme-light" id="debts" data-spy="directions" aria-labelledby="debts-title">
+      <section class="section chapter theme-light" id="debts" data-nav="directions" aria-labelledby="debts-title">
         <div class="container chapter__grid">
-          <p class="chapter__num" aria-hidden="true">II</p>
+          <p class="chapter__num" aria-hidden="true"><span class="numeral">II</span></p>
 
           <div class="chapter__head">
             <h2 class="section__title chapter__title" id="debts-title">Взыскание задолженности</h2>
@@ -445,9 +445,9 @@
       </section>
 
       <!-- ----- III. Семейные дела ----- -->
-      <section class="section chapter theme-light" id="family" data-spy="directions" aria-labelledby="family-title">
+      <section class="section chapter theme-light" id="family" data-nav="directions" aria-labelledby="family-title">
         <div class="container chapter__grid">
-          <p class="chapter__num" aria-hidden="true">III</p>
+          <p class="chapter__num" aria-hidden="true"><span class="numeral">III</span></p>
 
           <div class="chapter__head">
             <h2 class="section__title chapter__title" id="family-title">Семейные дела и&nbsp;раздел имущества</h2>
@@ -509,7 +509,7 @@
           <div class="tenure">
             <p class="tenure__value">22<span class="tenure__plus">+</span></p>
             <p class="tenure__label">года практики</p>
-            <p class="tenure__text">Арбитражные, гражданские и&nbsp;семейные дела в&nbsp;Санкт-Петербурге и&nbsp;Великом Новгороде.</p>
+            <p class="tenure__text">Арбитражные, гражданские и&nbsp;семейные дела в&nbsp;<span class="nowrap">Санкт-Петербурге</span> и&nbsp;Великом Новгороде.</p>
           </div>
 
           <div class="practice__charts">
@@ -653,8 +653,8 @@
           </blockquote>
 
           <div class="about__text">
-            <p>Я&nbsp;адвокат Адвокатской палаты города Санкт-Петербурга, стаж&nbsp;— более 22&nbsp;лет. Специализируюсь на&nbsp;гражданском и&nbsp;семейном праве, веду арбитражные споры. Представлял интересы клиентов в&nbsp;арбитражных судах и&nbsp;судах общей юрисдикции.</p>
-            <p>Работаю в&nbsp;Санкт-Петербурге и&nbsp;Великом Новгороде. Встречаюсь с&nbsp;клиентами в&nbsp;офисе на&nbsp;Мойке по&nbsp;записи, при необходимости выезжаю сам или консультирую онлайн. Работаю по&nbsp;договору.</p>
+            <p>Я&nbsp;адвокат Адвокатской палаты города <span class="nowrap">Санкт-Петербурга</span>, стаж&nbsp;— более 22&nbsp;лет. Специализируюсь на&nbsp;гражданском и&nbsp;семейном праве, веду арбитражные споры. Представлял интересы клиентов в&nbsp;арбитражных судах и&nbsp;судах общей юрисдикции.</p>
+            <p>Работаю в&nbsp;<span class="nowrap">Санкт-Петербурге</span> и&nbsp;Великом Новгороде. Встречаюсь с&nbsp;клиентами в&nbsp;офисе на&nbsp;Мойке по&nbsp;записи, при необходимости выезжаю сам или консультирую онлайн. Работаю по&nbsp;договору.</p>
           </div>
 
           <!-- Опыт до адвокатуры и образование на HARANT помечены как непроверенные:
@@ -694,7 +694,7 @@
           </div>
           <div class="req">
             <dt class="req__label">Адвокатская палата</dt>
-            <dd class="req__value">Адвокатская палата города Санкт-Петербурга</dd>
+            <dd class="req__value">Адвокатская палата города <span class="nowrap">Санкт-Петербурга</span></dd>
           </div>
         </dl>
       </div>
@@ -722,41 +722,43 @@
             </div>
           </div>
 
-          <dl class="price-list">
-            <div class="price-list__row">
-              <dt>Жалоба на&nbsp;бездействие приставов по&nbsp;взысканию алиментов</dt>
-              <dd>3&nbsp;000&nbsp;₽</dd>
-            </div>
-            <div class="price-list__row">
-              <dt>Представительство в&nbsp;суде</dt>
-              <dd>по&nbsp;договорённости</dd>
-            </div>
-            <div class="price-list__row">
-              <dt>Представительство в&nbsp;арбитражном суде</dt>
-              <dd>по&nbsp;договорённости</dd>
-            </div>
-            <div class="price-list__row">
-              <dt>Споры по&nbsp;долгам</dt>
-              <dd>по&nbsp;договорённости</dd>
-            </div>
-            <div class="price-list__row">
-              <dt>Взыскание алиментов</dt>
-              <dd>по&nbsp;договорённости</dd>
-            </div>
-          </dl>
-        </div>
+          <div class="pricing__main">
+            <dl class="price-list">
+              <div class="price-list__row">
+                <dt>Жалоба на&nbsp;бездействие приставов по&nbsp;взысканию алиментов</dt>
+                <dd>3&nbsp;000&nbsp;₽</dd>
+              </div>
+              <div class="price-list__row">
+                <dt>Представительство в&nbsp;суде</dt>
+                <dd>по&nbsp;договорённости</dd>
+              </div>
+              <div class="price-list__row">
+                <dt>Представительство в&nbsp;арбитражном суде</dt>
+                <dd>по&nbsp;договорённости</dd>
+              </div>
+              <div class="price-list__row">
+                <dt>Споры по&nbsp;долгам</dt>
+                <dd>по&nbsp;договорённости</dd>
+              </div>
+              <div class="price-list__row">
+                <dt>Взыскание алиментов</dt>
+                <dd>по&nbsp;договорённости</dd>
+              </div>
+            </dl>
 
-        <div class="terms">
-          <h3 class="terms__title">Условия</h3>
-          <ul class="terms__list" role="list">
-            <li class="terms__item">Работа по&nbsp;договору</li>
-            <li class="terms__item">Рассрочка 0&nbsp;%</li>
-            <li class="terms__item">Оплата наличными, картой, по&nbsp;счёту</li>
-            <li class="terms__item">Выезд к&nbsp;клиенту</li>
-            <li class="terms__item">Встреча в&nbsp;офисе по&nbsp;записи</li>
-            <li class="terms__item">Онлайн-консультации</li>
-            <li class="terms__item">Конфиденциальность</li>
-          </ul>
+            <div class="terms">
+              <h3 class="terms__title">Условия</h3>
+              <ul class="terms__list" role="list">
+                <li class="terms__item">Работа по&nbsp;договору</li>
+                <li class="terms__item">Рассрочка 0&nbsp;%</li>
+                <li class="terms__item">Оплата наличными, картой, по&nbsp;счёту</li>
+                <li class="terms__item">Выезд к&nbsp;клиенту</li>
+                <li class="terms__item">Встреча в&nbsp;офисе по&nbsp;записи</li>
+                <li class="terms__item">Онлайн-консультации</li>
+                <li class="terms__item">Конфиденциальность</li>
+              </ul>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -787,7 +789,7 @@
               </div>
               <div class="contacts__row">
                 <dt class="contacts__label">Адрес</dt>
-                <dd class="contacts__value">Санкт-Петербург, наб.&nbsp;реки Мойки, д.&nbsp;42</dd>
+                <dd class="contacts__value">Санкт-Петербург, наб.&nbsp;реки&nbsp;Мойки, д.&nbsp;42</dd>
               </div>
               <div class="contacts__row">
                 <dt class="contacts__label">Приём</dt>
@@ -840,7 +842,7 @@
   <!-- ===== 12. ПОДВАЛ ===== -->
   <footer class="footer theme-deep">
     <div class="footer__inner container">
-      <p class="footer__name">Адвокат Дмитриев Александр Николаевич · Адвокатская палата города Санкт-Петербурга · рег.&nbsp;№&nbsp;78/5868</p>
+      <p class="footer__name">Адвокат Дмитриев Александр Николаевич&nbsp;· Адвокатская палата города <span class="nowrap">Санкт-Петербурга</span>&nbsp;· рег.&nbsp;№&nbsp;78/5868</p>
 
       <nav class="footer__nav" aria-label="Разделы сайта в подвале">
         <ul class="footer__links" role="list">

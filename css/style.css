@@ -530,6 +530,19 @@ a[href^='tel:'] {
   transition: transform var(--t-hover) var(--ease-out);
 }
 
+/* Римские цифры. У «I» в Geologica нет засечек, и «II» читалось бы как
+   две палочки. Черта сверху и снизу во всю ширину, как у цифр на циферблате
+   (Ⅱ), возвращает им вид цифр — и повторяет двойную линейку сайта.
+   line-height 0.7 = высота прописной: у Geologica ascent − descent = 0.7 em,
+   поэтому строка ровно обнимает буквы, и зазор до черт одинаковый. */
+.numeral {
+  display: inline-block;
+  padding: 0.16em 0.04em 0.16em 0.09em;
+  border-block: max(1px, 0.03em) solid currentColor;
+  line-height: 0.7;
+  letter-spacing: 0.05em;
+}
+
 
 /* ----- Шапка: тёмно-зелёная полупрозрачная, поверх любых секций ----- */
 
@@ -976,11 +989,10 @@ a[href^='tel:'] {
 }
 
 .index__num {
+  justify-self: start;
   color: var(--accent);
   font-size: 1.375rem;
-  font-weight: 250;
-  line-height: 1;
-  letter-spacing: 0.02em;
+  font-weight: 300;
 }
 
 .index__body {
@@ -1080,12 +1092,11 @@ a[href^='tel:'] {
 /* Римская цифра — метка главы вместо линейки над заголовком.
    Тонкая (200) и крупная: читается как гравировка, а не как бейдж. */
 .chapter__num {
-  margin-bottom: 0.75rem;
+  display: flex;
+  margin-bottom: 1.25rem;
   color: var(--accent);
   font-size: var(--fs-numeral);
   font-weight: 200;
-  line-height: 0.8;
-  letter-spacing: 0.04em;
 }
 
 .chapter__title {
@@ -1165,10 +1176,10 @@ a[href^='tel:'] {
   margin-bottom: 1.5rem;
 }
 
+/* На узком экране — услуга над ценой, шире 480 px — в строку: одинаково
+   во всех строках, а не «где поместилось» */
 .fee__row {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: space-between;
+  display: grid;
   align-items: baseline;
   gap: 0.125rem 1rem;
   padding-block: 0.875rem;
@@ -1177,7 +1188,6 @@ a[href^='tel:'] {
 }
 
 .fee__row dt {
-  flex: 1 1 12rem;
   color: var(--muted);
   line-height: 1.45;
 }
@@ -1632,7 +1642,7 @@ a[href^='tel:'] {
 }
 
 .terms {
-  margin-top: var(--space-block);
+  margin-top: 2.5rem;
 }
 
 .terms__title {
@@ -1902,6 +1912,12 @@ a[href^='tel:'] {
    6. Утилиты
    ========================================================================== */
 
+/* «Санкт-Петербург» не рвётся на дефисе: неразрывного дефиса (U+2011)
+   в Geologica нет, поэтому — так */
+.nowrap {
+  white-space: nowrap;
+}
+
 .sr-only {
   position: absolute !important;
   width: 1px;
@@ -1942,6 +1958,14 @@ a[href^='tel:'] {
     flex: none;
   }
 
+  .fee__row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .fee__row dd {
+    text-align: right;
+  }
+
   .terms__list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -1976,9 +2000,9 @@ a[href^='tel:'] {
 
   .plinth__item {
     grid-template-columns: none;
+    align-content: start;
     gap: 0.125rem;
-    padding-block: 1.125rem;
-    padding-left: 1.5rem;
+    padding: 1.125rem 1.5rem;
     border-bottom: 0;
     border-left: 1px solid var(--line);
   }
@@ -1986,6 +2010,10 @@ a[href^='tel:'] {
   .plinth__item:first-child {
     padding-left: 0;
     border-left: 0;
+  }
+
+  .plinth__item:last-child {
+    padding-right: 0;
   }
 
   .cities__grid {
@@ -2009,10 +2037,6 @@ a[href^='tel:'] {
 
   .pricing {
     grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
-  }
-
-  .terms__list {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   .map {
@@ -2131,7 +2155,7 @@ a[href^='tel:'] {
   }
 
   .plinth__item {
-    padding-left: 2rem;
+    padding-inline: 2rem;
   }
 
   /* Главы: узкая колонка под римскую цифру, текст, «табличка» стоимости.
@@ -2191,9 +2215,13 @@ a[href^='tel:'] {
     align-items: start;
   }
 
-  .about__photo {
+  .about__photo,
+  .pricing__lead {
     position: sticky;
     top: calc(var(--header-h) + 1.5rem);
+  }
+
+  .about__photo {
     max-width: 26rem;
   }
 
@@ -2224,12 +2252,6 @@ a[href^='tel:'] {
     grid-column: 2;
     grid-row: 1;
     text-align: right;
-  }
-}
-
-@media (min-width: 80em) {
-  .terms__list {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 

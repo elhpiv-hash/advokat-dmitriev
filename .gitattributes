@@ -1,0 +1,9 @@
+# Переводы строк — LF во всех текстовых файлах: build.sh с CRLF не запустится
+# в bash на сервере (Linux, macOS), а HTML/CSS не должны «прыгать» в диффах.
+* text=auto eol=lf
+
+*.woff2 binary
+*.avif binary
+*.webp binary
+*.jpg binary
+*.ico binary
