@@ -317,8 +317,12 @@
     const box = document.querySelector('[data-map]');
     if (!box || !box.dataset.src) return;
 
+    const label = box.querySelector('[data-map-address]');
+    const buttons = Array.prototype.slice.call(document.querySelectorAll('[data-map-show]'));
+    let frame = null;
+
     function load() {
-      const frame = document.createElement('iframe');
+      frame = document.createElement('iframe');
       frame.className = 'map__frame';
       frame.src = box.dataset.src;
       frame.title = box.dataset.title || 'Карта';
@@ -328,6 +332,30 @@
       }, { once: true });
       box.appendChild(frame);
     }
+
+    /* Два офиса — одна карта: кнопка «На карте» у офиса меняет адрес виджета.
+       Если iframe ещё не создан, меняется только data-src — карта загрузится
+       сразу с нужным офисом. Кнопки появляются только здесь: без JS у каждого
+       офиса остаётся ссылка «Открыть в Яндекс Картах». */
+    function show(button) {
+      buttons.forEach(function (b) {
+        b.setAttribute('aria-pressed', String(b === button));
+      });
+      box.dataset.src = button.dataset.mapShow;
+      box.dataset.title = button.dataset.mapTitle;
+      if (label) label.textContent = button.dataset.mapLabel;
+      if (frame) {
+        frame.src = box.dataset.src;
+        frame.title = box.dataset.title;
+      }
+    }
+
+    buttons.forEach(function (button) {
+      button.hidden = false;
+      button.addEventListener('click', function () {
+        if (button.getAttribute('aria-pressed') !== 'true') show(button);
+      });
+    });
 
     if (!supportsObserver) {
       load();
@@ -344,6 +372,20 @@
     }, { rootMargin: '600px 0px' });
 
     observer.observe(box);
+  }
+
+
+  /* ----- Цвет панели браузера по палитре ----- */
+
+  /* Палитра выбирается классом на <html> (или ?palette=… для показа клиенту),
+     а theme-color в <head> записан для D. Берём цвет шапки (--p-deep) из CSS,
+     чтобы панель браузера на телефоне совпадала с шапкой при любом варианте.
+     getComputedStyle здесь — только пересчёт стилей, без раскладки страницы. */
+  function initThemeColor() {
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (!meta) return;
+    const color = getComputedStyle(root).getPropertyValue('--p-deep').trim();
+    if (color) meta.setAttribute('content', color);
   }
 
 
@@ -421,6 +463,7 @@
     initSmoothScroll(header);
     initMap();
     initMobileBar();
+    initThemeColor();
 
     // Всё инициализировано — отключаем CSS-страховку (failsafe-show) для скрытых блоков
     root.classList.add('is-ready');

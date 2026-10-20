@@ -1,5 +1,8 @@
 <!DOCTYPE html>
-<html lang="ru">
+<!-- Вариант цвета — класс на <html>: palette-a, palette-b, palette-c или palette-d
+     (исходный зелёный). Для показа клиенту вариант можно переключить и без
+     правки файла: адрес сайта с ?palette=a … ?palette=d. -->
+<html lang="ru" class="palette-d">
 <head>
   <meta charset="utf-8">
   <!-- viewport-fit=cover: страница рисуется под «чёлкой» и home-индикатором iPhone,
@@ -20,26 +23,35 @@
        и заменяет его везде сразу. -->
   <link rel="canonical" href="https://example.ru/">
 
-  <meta name="theme-color" content="#10231F">
-  <!-- Первый экран тёмный: говорим об этом браузеру до загрузки CSS, чтобы
-       фон до первой отрисовки и полосы прокрутки сразу были тёмными. -->
+  <!-- theme-color — цвет шапки (--p-deep); main.js подставляет его из выбранной
+       палитры, здесь — значение для D. color-scheme: у D первый экран тёмный,
+       и фон до загрузки CSS сразу тёмный; у A–C схему задаёт CSS (color-scheme). -->
+  <meta name="theme-color" content="#0A1714">
   <meta name="color-scheme" content="dark">
 
   <!-- Класс js ставится синхронно и ДО подключения CSS: стили «до появления»
        ([data-intro], фиксированная шапка) применяются только при включённом JS,
-       и класс есть уже к первой отрисовке — без мигания.
+       и класс есть уже к первой отрисовке — без мигания. Здесь же — ?palette=…
+       для показа вариантов цвета: класс меняется до первой отрисовки.
        sha256 этой строки для CSP (.htaccess) пересчитывает build.sh. -->
-  <script>document.documentElement.classList.add('js');</script>
+  <script>(function(d){d.classList.add('js');var m=/[?&]palette=([a-d])(&|$)/.exec(location.search);if(m){d.classList.remove('palette-a','palette-b','palette-c','palette-d');d.classList.add('palette-'+m[1])}})(document.documentElement);</script>
 
   <!-- Preload основного шрифта: кириллица Geologica — ею набран почти весь текст.
        crossorigin обязателен: шрифты запрашиваются в режиме CORS, без атрибута
        предзагруженный файл не совпадёт с запросом из CSS и скачается дважды. -->
   <link rel="preload" href="assets/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 
+  <!-- Preload портрета: он в первом экране и на десктопе — самый крупный
+       элемент (LCP). imagesrcset и imagesizes совпадают с <source> портрета —
+       иначе браузер выберет по ним другой файл и скачает оба. -->
+  <link rel="preload" as="image" type="image/avif" fetchpriority="high"
+        imagesrcset="assets/img/dmitriev-480.avif 480w, assets/img/dmitriev-800.avif 800w, assets/img/dmitriev-1200.avif 1200w"
+        imagesizes="(min-width: 48em) min(30rem, 38vw), 17rem">
+
   <!-- Подключаются только минифицированные файлы (их собирает build.sh).
        ?v= — хеш содержимого файла, его тоже ставит build.sh: статика кэшируется
        на год (immutable), и новый хеш сразу обходит кэш. -->
-  <link rel="stylesheet" href="css/style.min.css?v=8959fd8900">
+  <link rel="stylesheet" href="css/style.min.css?v=b35f737a33">
 
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -64,10 +76,10 @@
   <meta name="twitter:image" content="https://example.ru/assets/img/og-cover.jpg">
   <meta name="twitter:image:alt" content="Дмитриев Александр Николаевич, адвокат, Санкт-Петербург и Великий Новгород">
 
-  <!-- Schema.org: Attorney — подтип LocalBusiness: поисковики понимают адрес,
-       телефон и часы работы. Значения дублируют объект SITE из main.js —
-       при смене контактов правьте оба места. Индекса, номера офиса и координат
-       нет сознательно: их нет в исходных данных. -->
+  <!-- Schema.org: Attorney — подтип LocalBusiness: поисковики понимают адреса,
+       телефон и часы работы. Два офиса — два адреса. Значения дублируют объект
+       SITE из main.js — при смене контактов правьте оба места. Индексов, номера
+       офиса на Мойке и координат нет сознательно: их нет в исходных данных. -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -78,12 +90,21 @@
     "image": "https://example.ru/assets/img/og-cover.jpg",
     "telephone": "+7 921 730-03-05",
     "email": "dan911777@mail.ru",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "наб. реки Мойки, д. 42",
-      "addressLocality": "Санкт-Петербург",
-      "addressCountry": "RU"
-    },
+    "address": [
+      {
+        "@type": "PostalAddress",
+        "streetAddress": "наб. реки Мойки, д. 42",
+        "addressLocality": "Санкт-Петербург",
+        "addressCountry": "RU"
+      },
+      {
+        "@type": "PostalAddress",
+        "streetAddress": "ул. Большая Санкт-Петербургская, д. 56, оф. 6",
+        "addressLocality": "Великий Новгород",
+        "addressRegion": "Новгородская область",
+        "addressCountry": "RU"
+      }
+    ],
     "areaServed": [
       { "@type": "City", "name": "Санкт-Петербург" },
       { "@type": "City", "name": "Великий Новгород" }
@@ -118,7 +139,7 @@
   </script>
 
   <!-- defer: скрипт качается параллельно с разбором HTML и выполняется после него. -->
-  <script src="js/main.min.js?v=bf4b1dbf7b" defer></script>
+  <script src="js/main.min.js?v=524748ab83" defer></script>
 </head>
 <body>
   <!-- Типографика: неразрывные пробелы записаны сущностью &nbsp;, чтобы их было
@@ -143,11 +164,12 @@
       <path d="M22 2 15 22l-4-9-9-4 20-7z"/>
     </symbol>
     <!-- Монограмма: «Д» и «А» (контуры Geologica 600, без шрифта) в двойной
-         бронзовой рамке — как гравировка на латунной табличке. Тот же знак,
-         с одинарной рамкой, — в favicon. Буквы — currentColor: цвет задаёт CSS. -->
+         рамке акцентного цвета — как гравировка на латунной табличке. Тот же
+         знак, с одинарной рамкой, — в favicon. Буквы — currentColor, рамка —
+         --d-accent палитры (через style: в атрибуте stroke var() не работает). -->
     <symbol id="i-mono" viewBox="0 0 48 48">
-      <rect x="1" y="1" width="46" height="46" fill="none" stroke="#BE8E5C" stroke-width="1.25"/>
-      <rect x="4.5" y="4.5" width="39" height="39" fill="none" stroke="#BE8E5C" stroke-width="0.75"/>
+      <rect x="1" y="1" width="46" height="46" fill="none" style="stroke: var(--d-accent, #BE8E5C)" stroke-width="1.25"/>
+      <rect x="4.5" y="4.5" width="39" height="39" fill="none" style="stroke: var(--d-accent, #BE8E5C)" stroke-width="0.75"/>
       <path fill="currentColor" d="M18.94 30.5L18.94 20.02L14.6 20.02L14.6 21.28Q14.6 23.55 14.36 25.17Q14.13 26.8 13.63 27.86Q13.12 28.93 12.28 29.55Q11.45 30.18 10.25 30.46L9.29 28.17Q10.11 27.98 10.64 27.6Q11.16 27.22 11.46 26.47Q11.76 25.73 11.87 24.47Q11.99 23.21 11.99 21.28L11.99 17.5L21.69 17.5L21.69 30.5ZM9.29 33.79L9.29 28.17L10.94 28.24L11.84 27.98L23.78 27.98L23.78 33.79L21.17 33.79L21.17 30.5L11.9 30.5L11.9 33.79ZM25.66 30.5L30.58 17.5L33.71 17.5L38.71 30.5L35.61 30.5L34.6 27.71L29.65 27.71L28.67 30.5ZM30.3 25.39L33.93 25.39L32.09 20.52Z"/>
     </symbol>
     <symbol id="i-arrow-right" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -225,12 +247,29 @@
   <main id="main" tabindex="-1">
 
     <!-- ===== 2. ПЕРВЫЙ ЭКРАН ===== -->
-    <!-- Без фото: фотография одна, и её место — в «Об адвокате». Первый экран
-         держится на имени, набранном как латунная табличка у парадной, и на
-         оглавлении трёх направлений. Имя секции — из видимого заголовка
-         (aria-labelledby), так у всех секций. -->
-    <section class="hero theme-dark" id="top" aria-labelledby="hero-title">
+    <!-- Портрет — главный акцент: справа на планшете и десктопе, над именем на
+         телефоне (в DOM он первый, сетка переставляет). Имя набрано как латунная
+         табличка. Имя секции — из видимого заголовка (aria-labelledby), так у всех. -->
+    <section class="hero theme-hero" id="top" aria-labelledby="hero-title">
       <div class="hero__inner container">
+        <!-- Пути к фото — окончательные: build-images.sh собирает эти файлы из
+             assets/img/src/dmitriev.jpg, а пока исходника нет — из заглушки
+             с монограммой. Замена фото = положить файл и запустить скрипт,
+             разметку трогать не нужно. Кадр 4 : 5 показывается целиком.
+             Не lazy и fetchpriority="high": портрет в первом экране. -->
+        <figure class="hero__portrait">
+          <picture>
+            <source type="image/avif"
+                    srcset="assets/img/dmitriev-480.avif 480w, assets/img/dmitriev-800.avif 800w, assets/img/dmitriev-1200.avif 1200w"
+                    sizes="(min-width: 48em) min(30rem, 38vw), 17rem">
+            <source type="image/webp"
+                    srcset="assets/img/dmitriev-480.webp 480w, assets/img/dmitriev-800.webp 800w, assets/img/dmitriev-1200.webp 1200w"
+                    sizes="(min-width: 48em) min(30rem, 38vw), 17rem">
+            <img class="hero__photo" src="assets/img/dmitriev-800.jpg" width="800" height="1000"
+                 alt="Дмитриев Александр Николаевич, адвокат" fetchpriority="high">
+          </picture>
+        </figure>
+
         <div class="hero__content">
           <p class="hero__meta">Адвокат Адвокатской палаты города <span class="nowrap">Санкт-Петербурга</span>, рег.&nbsp;№&nbsp;78/5868</p>
 
@@ -264,75 +303,77 @@
             <p class="hero__note">Консультация&nbsp;— бесплатно</p>
           </div>
         </div>
-
-        <!-- Оглавление трёх направлений: на десктопе — правая колонка первого
-             экрана, на телефоне — под кнопками. Римские цифры — те же, что
-             в заголовках разделов ниже. -->
-        <nav class="hero__index" aria-labelledby="index-title" data-intro>
-          <p class="hero__index-title" id="index-title">Направления практики</p>
-          <ol class="index" role="list">
-            <li>
-              <a class="index__link" href="#arbitration">
-                <span class="index__num numeral" aria-hidden="true">I</span>
-                <span class="index__body">
-                  <span class="index__name">Арбитражные споры</span>
-                  <span class="index__desc">Арбитражный суд, споры по&nbsp;долгам, претензии</span>
-                </span>
-                <svg class="icon index__arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
-              </a>
-            </li>
-            <li>
-              <a class="index__link" href="#debts">
-                <span class="index__num numeral" aria-hidden="true">II</span>
-                <span class="index__body">
-                  <span class="index__name">Взыскание задолженности</span>
-                  <span class="index__desc">Долги, суд общей юрисдикции, работа с&nbsp;приставами</span>
-                </span>
-                <svg class="icon index__arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
-              </a>
-            </li>
-            <li>
-              <a class="index__link" href="#family">
-                <span class="index__num numeral" aria-hidden="true">III</span>
-                <span class="index__body">
-                  <span class="index__name">Семейные дела и&nbsp;раздел имущества</span>
-                  <span class="index__desc">Раздел имущества, алименты, наследство</span>
-                </span>
-                <svg class="icon index__arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
-              </a>
-            </li>
-          </ol>
-        </nav>
       </div>
     </section>
 
     <!-- ===== 3. ЦОКОЛЬ ===== -->
-    <!-- Гранитный цоколь первого экрана: приём, офис и города — три факта
-         в одну строку. Заголовка нет, поэтому имя области — aria-label. -->
-    <aside class="plinth theme-deep" aria-label="Приём и офис">
+    <!-- Нижний край первого экрана: приём и офисы в двух городах.
+         Заголовка нет, поэтому имя области — aria-label. -->
+    <aside class="plinth theme-deep" aria-label="Приём и офисы">
       <div class="container">
         <dl class="plinth__list">
           <div class="plinth__item">
             <dt class="plinth__label">Приём</dt>
-            <dd class="plinth__value">Ежедневно, 10:00–18:00</dd>
+            <dd class="plinth__value">Ежедневно, 10:00–18:00, по&nbsp;записи</dd>
           </div>
           <div class="plinth__item">
-            <dt class="plinth__label">Офис</dt>
-            <dd class="plinth__value">Санкт-Петербург, наб.&nbsp;реки Мойки,&nbsp;42</dd>
+            <dt class="plinth__label">Офис в&nbsp;<span class="nowrap">Санкт-Петербурге</span></dt>
+            <dd class="plinth__value">наб.&nbsp;реки&nbsp;Мойки, д.&nbsp;42</dd>
           </div>
           <div class="plinth__item">
-            <dt class="plinth__label">Города</dt>
-            <dd class="plinth__value">Санкт-Петербург и&nbsp;Великий Новгород</dd>
+            <dt class="plinth__label">Офис в&nbsp;Великом Новгороде</dt>
+            <dd class="plinth__value">ул.&nbsp;Большая <span class="nowrap">Санкт-Петербургская</span>, д.&nbsp;56, оф.&nbsp;6</dd>
           </div>
         </dl>
       </div>
     </aside>
 
-    <!-- ===== 4–6. НАПРАВЛЕНИЯ ===== -->
-    <!-- Три направления — три «главы» одного документа: подряд на светлом граните,
-         разделены двойной линейкой. Обёртка с id — цель пункта меню «Направления»;
-         data-nav у секций говорит подсветке меню, к какому пункту они относятся. -->
-    <div class="chapters" id="directions">
+    <!-- ===== 4. НАПРАВЛЕНИЯ ===== -->
+    <!-- Полоса сразу под первым экраном: три карточки-ссылки на главы ниже.
+         Римские цифры — те же, что у глав. id — цель пункта меню «Направления». -->
+    <section class="directions theme-paper" id="directions" data-nav="directions" aria-labelledby="directions-title">
+      <div class="container">
+        <h2 class="directions__title" id="directions-title">Направления практики</h2>
+        <ol class="directions__list" role="list">
+          <li>
+            <a class="direction" href="#arbitration">
+              <span class="direction__num numeral" aria-hidden="true">I</span>
+              <svg class="icon direction__arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              <span class="direction__body">
+                <span class="direction__name">Арбитражные споры</span>
+                <span class="direction__desc">Арбитражный суд, споры по&nbsp;долгам, претензии</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a class="direction" href="#debts">
+              <span class="direction__num numeral" aria-hidden="true">II</span>
+              <svg class="icon direction__arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              <span class="direction__body">
+                <span class="direction__name">Взыскание задолженности</span>
+                <span class="direction__desc">Долги, суд общей юрисдикции, работа с&nbsp;приставами</span>
+              </span>
+            </a>
+          </li>
+          <li>
+            <a class="direction" href="#family">
+              <span class="direction__num numeral" aria-hidden="true">III</span>
+              <svg class="icon direction__arrow" aria-hidden="true"><use href="#i-arrow-right"/></svg>
+              <span class="direction__body">
+                <span class="direction__name">Семейные дела и&nbsp;раздел имущества</span>
+                <span class="direction__desc">Раздел имущества, алименты, наследство</span>
+              </span>
+            </a>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ===== 5–7. ГЛАВЫ НАПРАВЛЕНИЙ ===== -->
+    <!-- Три направления — три «главы» одного документа: подряд на светлом фоне,
+         разделены двойной линейкой. data-nav у секций говорит подсветке меню,
+         что они относятся к пункту «Направления». -->
+    <div class="chapters">
 
       <!-- ----- I. Арбитражные споры ----- -->
       <section class="section chapter theme-light" id="arbitration" data-nav="directions" aria-labelledby="arbitration-title">
@@ -498,8 +539,8 @@
       </section>
     </div>
 
-    <!-- ===== 7. ПРАКТИКА ===== -->
-    <section class="section theme-dark" id="practice" aria-labelledby="practice-title">
+    <!-- ===== 8. ПРАКТИКА ===== -->
+    <section class="section theme-band" id="practice" aria-labelledby="practice-title">
       <div class="container">
         <h2 class="section__title" id="practice-title">Практика</h2>
 
@@ -588,16 +629,17 @@
              с номерами (префикс А44 — Арбитражный суд Новгородской области). -->
         <div class="cities">
           <h3 class="cities__title">Санкт-Петербург и&nbsp;Великий Новгород</h3>
-          <p class="cities__lead">Представительство в&nbsp;арбитражных судах и&nbsp;судах общей юрисдикции&nbsp;— в&nbsp;обоих городах.</p>
+          <p class="cities__lead">Офисы в&nbsp;обоих городах. Представительство в&nbsp;арбитражных судах и&nbsp;судах общей юрисдикции.</p>
 
           <div class="cities__grid">
             <article class="city">
               <h4 class="city__name">Санкт-Петербург</h4>
-              <p class="city__text">Офис на&nbsp;набережной реки Мойки,&nbsp;42. Встречи по&nbsp;записи, выезд к&nbsp;клиенту, онлайн-консультации.</p>
+              <p class="city__text">Офис: наб.&nbsp;реки&nbsp;Мойки, д.&nbsp;42. Встречи по&nbsp;записи, выезд к&nbsp;клиенту, онлайн-консультации.</p>
             </article>
 
             <article class="city">
               <h4 class="city__name">Великий Новгород</h4>
+              <p class="city__text">Офис: ул.&nbsp;Большая <span class="nowrap">Санкт-Петербургская</span>, д.&nbsp;56, оф.&nbsp;6.</p>
               <p class="city__text">Арбитражный суд Новгородской области&nbsp;— 5&nbsp;дел:</p>
               <ul class="cases" role="list">
                 <li class="cases__item">А44-2011/2026</li>
@@ -620,29 +662,12 @@
       </div>
     </section>
 
-    <!-- ===== 8. ОБ АДВОКАТЕ ===== -->
+    <!-- ===== 9. ОБ АДВОКАТЕ ===== -->
     <section class="section theme-paper" id="about" aria-labelledby="about-title">
       <div class="container about">
-        <!-- Портрет. Пути — окончательные: build-images.sh собирает эти файлы из
-             assets/img/src/dmitriev.jpg, а пока исходника нет — из заглушки
-             с монограммой. Замена фото = положить файл и запустить скрипт,
-             разметку трогать не нужно. loading="lazy": снимок далеко от первого
-             экрана. width/height — пропорция 4 : 5 (место резервируется без сдвигов). -->
-        <figure class="about__photo">
-          <picture>
-            <source type="image/avif"
-                    srcset="assets/img/dmitriev-480.avif 480w, assets/img/dmitriev-800.avif 800w, assets/img/dmitriev-1200.avif 1200w"
-                    sizes="(min-width: 30em) 26rem, calc(100vw - 2.5rem)">
-            <source type="image/webp"
-                    srcset="assets/img/dmitriev-480.webp 480w, assets/img/dmitriev-800.webp 800w, assets/img/dmitriev-1200.webp 1200w"
-                    sizes="(min-width: 30em) 26rem, calc(100vw - 2.5rem)">
-            <img class="about__img" src="assets/img/dmitriev-800.jpg" width="800" height="1000"
-                 alt="Дмитриев Александр Николаевич, адвокат" loading="lazy" decoding="async">
-          </picture>
-          <figcaption class="about__caption">Дмитриев Александр Николаевич</figcaption>
-        </figure>
-
-        <div class="about__body">
+        <!-- Портрет — в первом экране; второй раз тот же снимок не ставим.
+             Слева заголовок и цитата, справа текст. -->
+        <div class="about__head">
           <h2 class="section__title" id="about-title">Об&nbsp;адвокате</h2>
 
           <!-- Цитата из профиля на HARANT, слово в слово. Кавычки — висячие:
@@ -651,10 +676,12 @@
           <blockquote class="about__quote">
             <p>Убеждён, что сила&nbsp;— в&nbsp;правде, за&nbsp;которую стоит бороться.</p>
           </blockquote>
+        </div>
 
+        <div class="about__body">
           <div class="about__text">
             <p>Я&nbsp;адвокат Адвокатской палаты города <span class="nowrap">Санкт-Петербурга</span>, стаж&nbsp;— более 22&nbsp;лет. Специализируюсь на&nbsp;гражданском и&nbsp;семейном праве, веду арбитражные споры. Представлял интересы клиентов в&nbsp;арбитражных судах и&nbsp;судах общей юрисдикции.</p>
-            <p>Работаю в&nbsp;<span class="nowrap">Санкт-Петербурге</span> и&nbsp;Великом Новгороде. Встречаюсь с&nbsp;клиентами в&nbsp;офисе на&nbsp;Мойке по&nbsp;записи, при необходимости выезжаю сам или консультирую онлайн. Работаю по&nbsp;договору.</p>
+            <p>Работаю в&nbsp;<span class="nowrap">Санкт-Петербурге</span> и&nbsp;Великом Новгороде, в&nbsp;каждом городе есть офис. Встречаюсь с&nbsp;клиентами по&nbsp;записи, при необходимости выезжаю сам или консультирую онлайн. Работаю по&nbsp;договору.</p>
           </div>
 
           <!-- Опыт до адвокатуры и образование на HARANT помечены как непроверенные:
@@ -667,7 +694,7 @@
       </div>
     </section>
 
-    <!-- ===== 9. ПРОВЕРИТЬ АДВОКАТА ===== -->
+    <!-- ===== 10. ПРОВЕРИТЬ АДВОКАТА ===== -->
     <!-- Реквизиты строками, как в справке: что проверить → данные → где. -->
     <section class="section theme-paper section--joined" id="verify" aria-labelledby="verify-title">
       <div class="container">
@@ -700,7 +727,7 @@
       </div>
     </section>
 
-    <!-- ===== 10. СТОИМОСТЬ И УСЛОВИЯ ===== -->
+    <!-- ===== 11. СТОИМОСТЬ И УСЛОВИЯ ===== -->
     <section class="section theme-light" id="prices" aria-labelledby="prices-title">
       <div class="container">
         <h2 class="section__title" id="prices-title">Стоимость и&nbsp;условия</h2>
@@ -708,7 +735,7 @@
         <div class="pricing">
           <!-- Бесплатная консультация — тёмная «табличка» с двойной рамкой:
                с неё начинается любое дело, поэтому она главная. -->
-          <div class="pricing__lead">
+          <div class="pricing__lead scheme-dark">
             <h3 class="pricing__lead-title">Консультация</h3>
             <p class="pricing__lead-value">бесплатно</p>
             <p class="pricing__lead-text">В&nbsp;офисе по&nbsp;записи, по&nbsp;телефону или онлайн.</p>
@@ -763,8 +790,8 @@
       </div>
     </section>
 
-    <!-- ===== 11. КОНТАКТЫ ===== -->
-    <section class="section theme-dark" id="contacts" aria-labelledby="contacts-title">
+    <!-- ===== 12. КОНТАКТЫ ===== -->
+    <section class="section theme-band" id="contacts" aria-labelledby="contacts-title">
       <div class="container contacts">
         <div class="contacts__info">
           <h2 class="section__title" id="contacts-title">Контакты</h2>
@@ -786,10 +813,6 @@
               <div class="contacts__row">
                 <dt class="contacts__label">Telegram</dt>
                 <dd class="contacts__value"><a class="contacts__link" href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link"><span data-site="telegram-text">+7 (921) 730-03-05</span></a></dd>
-              </div>
-              <div class="contacts__row">
-                <dt class="contacts__label">Адрес</dt>
-                <dd class="contacts__value">Санкт-Петербург, наб.&nbsp;реки&nbsp;Мойки, д.&nbsp;42</dd>
               </div>
               <div class="contacts__row">
                 <dt class="contacts__label">Приём</dt>
@@ -817,29 +840,57 @@
         </div>
 
         <div class="contacts__map">
+          <!-- Два офиса: адрес, ссылка на Яндекс Карты (работает и без JS) и кнопка,
+               которая показывает офис на встроенной карте. Кнопки скрыты
+               атрибутом hidden — main.js снимает его, когда карта может работать. -->
+          <div class="offices">
+            <article class="office">
+              <h3 class="office__city">Санкт-Петербург</h3>
+              <p class="office__address">наб.&nbsp;реки&nbsp;Мойки, д.&nbsp;42</p>
+              <p class="office__links">
+                <a class="link-arrow" href="https://yandex.ru/maps/?text=%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3%2C%20%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F%20%D1%80%D0%B5%D0%BA%D0%B8%20%D0%9C%D0%BE%D0%B9%D0%BA%D0%B8%2C%2042&amp;z=16" target="_blank" rel="noopener">Открыть в&nbsp;Яндекс&nbsp;Картах<span class="sr-only">: Санкт-Петербург, набережная реки Мойки, 42 (откроется в&nbsp;новой вкладке)</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <button class="office__show" type="button" aria-pressed="true" aria-controls="map" hidden
+                        data-map-show="https://yandex.ru/map-widget/v1/?text=%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3%2C%20%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F%20%D1%80%D0%B5%D0%BA%D0%B8%20%D0%9C%D0%BE%D0%B9%D0%BA%D0%B8%2C%2042&amp;z=16"
+                        data-map-title="Карта: Санкт-Петербург, набережная реки Мойки, 42"
+                        data-map-label="наб. реки Мойки, д. 42">На&nbsp;карте<span class="sr-only"> — Санкт-Петербург</span></button>
+              </p>
+            </article>
+            <article class="office">
+              <h3 class="office__city">Великий Новгород</h3>
+              <p class="office__address">ул.&nbsp;Большая <span class="nowrap">Санкт-Петербургская</span>, д.&nbsp;56, оф.&nbsp;6</p>
+              <p class="office__links">
+                <a class="link-arrow" href="https://yandex.ru/maps/?text=%D0%92%D0%B5%D0%BB%D0%B8%D0%BA%D0%B8%D0%B9%20%D0%9D%D0%BE%D0%B2%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%2C%20%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%D1%8F%20%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3%D1%81%D0%BA%D0%B0%D1%8F%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%2C%2056&amp;z=16" target="_blank" rel="noopener">Открыть в&nbsp;Яндекс&nbsp;Картах<span class="sr-only">: Великий Новгород, Большая Санкт-Петербургская, 56 (откроется в&nbsp;новой вкладке)</span><svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg></a>
+                <button class="office__show" type="button" aria-pressed="false" aria-controls="map" hidden
+                        data-map-show="https://yandex.ru/map-widget/v1/?text=%D0%92%D0%B5%D0%BB%D0%B8%D0%BA%D0%B8%D0%B9%20%D0%9D%D0%BE%D0%B2%D0%B3%D0%BE%D1%80%D0%BE%D0%B4%2C%20%D0%91%D0%BE%D0%BB%D1%8C%D1%88%D0%B0%D1%8F%20%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3%D1%81%D0%BA%D0%B0%D1%8F%20%D1%83%D0%BB%D0%B8%D1%86%D0%B0%2C%2056&amp;z=16"
+                        data-map-title="Карта: Великий Новгород, Большая Санкт-Петербургская улица, 56"
+                        data-map-label="ул. Большая Санкт-Петербургская, д. 56">На&nbsp;карте<span class="sr-only"> — Великий Новгород</span></button>
+              </p>
+            </article>
+          </div>
+
           <!-- Карта не вставлена в HTML: iframe создаёт main.js, когда блок подходит
                к экрану (адрес — в data-src). Встроенный loading="lazy" не подходит:
                порог у него задаёт браузер, и карта начинала бы грузиться почти сразу,
                забирая сеть у первого экрана. Без JS остаётся заглушка со ссылкой. -->
-          <div class="map" data-map
+          <div class="map" id="map" data-map
                data-src="https://yandex.ru/map-widget/v1/?text=%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3%2C%20%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F%20%D1%80%D0%B5%D0%BA%D0%B8%20%D0%9C%D0%BE%D0%B9%D0%BA%D0%B8%2C%2042&amp;z=16"
                data-title="Карта: Санкт-Петербург, набережная реки Мойки, 42">
             <div class="map__placeholder">
-              <p class="map__address">наб. реки Мойки, д.&nbsp;42</p>
+              <p class="map__address" data-map-address>наб. реки Мойки, д.&nbsp;42</p>
               <a class="link-arrow" href="https://yandex.ru/maps/?text=%D0%A1%D0%B0%D0%BD%D0%BA%D1%82-%D0%9F%D0%B5%D1%82%D0%B5%D1%80%D0%B1%D1%83%D1%80%D0%B3%2C%20%D0%BD%D0%B0%D0%B1%D0%B5%D1%80%D0%B5%D0%B6%D0%BD%D0%B0%D1%8F%20%D1%80%D0%B5%D0%BA%D0%B8%20%D0%9C%D0%BE%D0%B9%D0%BA%D0%B8%2C%2042&amp;z=16" target="_blank" rel="noopener">
                 Открыть в&nbsp;Яндекс&nbsp;Картах<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span>
                 <svg class="icon" aria-hidden="true"><use href="#i-arrow"/></svg>
               </a>
             </div>
           </div>
-          <p class="contacts__caption">Набережная реки Мойки, 42&nbsp;— встреча в&nbsp;офисе по&nbsp;предварительной записи</p>
+          <p class="contacts__caption">Встреча в&nbsp;офисе&nbsp;— по&nbsp;предварительной записи</p>
         </div>
       </div>
     </section>
 
   </main>
 
-  <!-- ===== 12. ПОДВАЛ ===== -->
+  <!-- ===== 13. ПОДВАЛ ===== -->
   <footer class="footer theme-deep">
     <div class="footer__inner container">
       <p class="footer__name">Адвокат Дмитриев Александр Николаевич&nbsp;· Адвокатская палата города <span class="nowrap">Санкт-Петербурга</span>&nbsp;· рег.&nbsp;№&nbsp;78/5868</p>
@@ -866,7 +917,7 @@
     </div>
   </footer>
 
-  <!-- ===== 13. МОБИЛЬНАЯ ПАНЕЛЬ ===== -->
+  <!-- ===== 14. МОБИЛЬНАЯ ПАНЕЛЬ ===== -->
   <!-- Видна только до 768 px: звонок и почта. Пока на экране кнопки первого экрана,
        панель спрятана, чтобы не дублировать их; прячется и при клавиатуре (main.js). -->
   <aside class="mobile-bar" aria-label="Быстрая связь" data-mobile-bar>

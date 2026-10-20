@@ -81,48 +81,206 @@
    1. Переменные
    ========================================================================== */
 
+/* ----- Палитры -----
+   Четыре варианта цвета; включается классом на <html>: palette-a … palette-d
+   (без класса — D). Варианты различаются не только цветами, но и тем, какие
+   секции тёмные: у A светлый первый экран, у B светлые «Практика» и «Контакты».
+   Поэтому палитра задаёт фоны (--p-*) и два набора цветов текста — для тёмной
+   схемы (--d-*) и для светлой (--l-*), а темы секций (ниже) решают, какую
+   схему взять. -rgb — те же цвета тройкой для полупрозрачных линий.
+   Контраст по WCAG 2.2 (AA ≥ 4.5 : 1, графика ≥ 3 : 1) проверен для каждой
+   пары «текст — фон», в том числе на карточках (белый 6 % поверх тёмного):
+     D: текст на тёмном ≥ 5.3, на светлом ≥ 5.2, кнопки 5.6 / 15.1
+     A: ≥ 5.2 / ≥ 5.3, кнопки 6.5 / 12.4
+     B: ≥ 4.9 / ≥ 5.7, кнопки 9.0 / 8.3
+     C: ≥ 4.5 / ≥ 6.0, кнопки 6.7 / 6.7 */
+
+/* D — исходная: зелёный, гранит набережной, бронза */
+:root,
+.palette-d {
+  --p-hero: #10231F;          /* первый экран */
+  --p-band: #10231F;          /* «Практика», «Контакты» */
+  --p-deep: #0A1714;          /* шапка, цоколь, подвал, мобильная панель */
+  --p-deep-rgb: 10 23 20;
+  --p-plate: #10231F;         /* тёмные таблички: консультация, подложка фото */
+  --p-light: #ECE6E0;
+  --p-paper: #E2DAD2;
+
+  --d-fg: #EEE7DA;
+  --d-fg-rgb: 238 231 218;
+  --d-strong: #D3CCBF;
+  --d-muted: #A9B2AB;
+  --d-label: #97A39C;
+  --d-accent: #BE8E5C;
+  --d-accent-rgb: 190 142 92;
+  --d-accent-hover: #D3A877;
+  --d-accent-text: #C99D6E;
+  --d-cta-fg: #10231F;
+
+  --l-fg: #15201D;
+  --l-fg-rgb: 21 32 29;
+  --l-muted: #4E5A56;
+  --l-card: #F8F5F1;
+  --l-accent: #7A4E26;
+  --l-accent-rgb: 122 78 38;
+  --l-cta-bg: #10231F;
+  --l-cta-fg: #F8F5F1;
+  --l-cta-hover: #17302A;
+}
+
+/* A — светлая: тёплый белый и песок, глубокий синий, латунь. Первый экран
+   светлый; синие — «Практика», «Контакты», шапка, цоколь и подвал. */
+.palette-a {
+  --p-hero: #F6F1E7;
+  --p-band: #17345F;
+  --p-deep: #102445;
+  --p-deep-rgb: 16 36 69;
+  --p-plate: #17345F;
+  --p-light: #FBF8F2;
+  --p-paper: #F2EBDF;
+
+  --d-fg: #F4EFE6;
+  --d-fg-rgb: 244 239 230;
+  --d-strong: #E2DCD0;
+  --d-muted: #B9C3D6;
+  --d-label: #AEB8CC;
+  --d-accent: #C9A262;
+  --d-accent-rgb: 201 162 98;
+  --d-accent-hover: #DABA80;
+  --d-accent-text: #D9B878;
+  --d-cta-fg: #102445;
+
+  --l-fg: #16233B;
+  --l-fg-rgb: 22 35 59;
+  --l-muted: #4F586A;
+  --l-card: #FFFFFF;
+  --l-accent: #7D5A1E;
+  --l-accent-rgb: 125 90 30;
+  --l-cta-bg: #17345F;
+  --l-cta-fg: #FFFFFF;
+  --l-cta-hover: #20457A;
+
+  color-scheme: light;
+}
+
+/* B — насыщенный синий первый экран, остальные секции светлые; акцент — золото */
+.palette-b {
+  --p-hero: #1D4E8F;
+  --p-band: #DCE6F2;
+  --p-deep: #133766;
+  --p-deep-rgb: 19 55 102;
+  --p-plate: #1D4E8F;
+  --p-light: #F5F7FA;
+  --p-paper: #E8EEF6;
+
+  --d-fg: #FFFFFF;
+  --d-fg-rgb: 255 255 255;
+  --d-strong: #EEF3FA;
+  --d-muted: #D3DFF0;
+  --d-label: #C9D7EC;
+  --d-accent: #F2C46D;
+  --d-accent-rgb: 242 196 109;
+  --d-accent-hover: #F7D58F;
+  --d-accent-text: #F7D489;
+  --d-cta-fg: #10284D;
+
+  --l-fg: #14213A;
+  --l-fg-rgb: 20 33 58;
+  --l-muted: #4D586C;
+  --l-card: #FFFFFF;
+  --l-accent: #1D4E8F;
+  --l-accent-rgb: 29 78 143;
+  --l-cta-bg: #1D4E8F;
+  --l-cta-fg: #FFFFFF;
+  --l-cta-hover: #163F75;
+
+  color-scheme: light;
+}
+
+/* C — «Зимний дворец»: малахитовая зелень, тёплый белый, золото. Тот же
+   зелёный род, что у D, — узнаваемо, но светлее и живее. */
+.palette-c {
+  --p-hero: #22665B;
+  --p-band: #22665B;
+  --p-deep: #174C43;
+  --p-deep-rgb: 23 76 67;
+  --p-plate: #22665B;
+  --p-light: #FBFAF6;
+  --p-paper: #ECF3EF;
+
+  --d-fg: #FFFFFF;
+  --d-fg-rgb: 255 255 255;
+  --d-strong: #F0F6F3;
+  --d-muted: #DDECE7;
+  --d-label: #D6E8E2;
+  --d-accent: #E3B85F;
+  --d-accent-rgb: 227 184 95;
+  --d-accent-hover: #EDCA80;
+  --d-accent-text: #F8E0A8;
+  --d-cta-fg: #123A33;
+
+  --l-fg: #13241F;
+  --l-fg-rgb: 19 36 31;
+  --l-muted: #4A5A55;
+  --l-card: #FFFFFF;
+  --l-accent: #22665B;
+  --l-accent-rgb: 34 102 91;
+  --l-cta-bg: #22665B;
+  --l-cta-fg: #FFFFFF;
+  --l-cta-hover: #1C5249;
+
+  color-scheme: light;
+}
+
+/* ----- Схемы ролей -----
+   Компоненты берут цвета только из ролей (--fg, --muted, --accent …);
+   тема секции выбирает схему, палитра — её цвета. */
+
+/* Тёмная схема — по умолчанию и у тёмных тем */
+:root,
+.scheme-dark,
+.theme-hero,
+.theme-band,
+.theme-deep {
+  --fg: var(--d-fg);
+  --strong: var(--d-strong);
+  --muted: var(--d-muted);
+  --label: var(--d-label);
+  --line: rgb(var(--d-fg-rgb) / 0.13);
+  --line-strong: rgb(var(--d-fg-rgb) / 0.26);
+  --card: rgb(255 255 255 / 0.05);
+  --accent: var(--d-accent);
+  --accent-text: var(--d-accent-text);
+  --cta-bg: var(--d-accent);
+  --cta-fg: var(--d-cta-fg);
+  --cta-hover: var(--d-accent-hover);
+  --tint: rgb(var(--d-accent-rgb) / 0.12);
+  --focus: var(--d-fg);
+}
+
+/* Светлая схема — у светлых тем, у первого экрана в A и у «полос» в B */
+.scheme-light,
+.theme-light,
+.theme-paper,
+.palette-a .theme-hero,
+.palette-b .theme-band {
+  --fg: var(--l-fg);
+  --strong: var(--l-fg);
+  --muted: var(--l-muted);
+  --label: var(--l-muted);
+  --line: rgb(var(--l-fg-rgb) / 0.14);
+  --line-strong: rgb(var(--l-fg-rgb) / 0.3);
+  --card: var(--l-card);
+  --accent: var(--l-accent);
+  --accent-text: var(--l-accent);
+  --cta-bg: var(--l-cta-bg);
+  --cta-fg: var(--l-cta-fg);
+  --cta-hover: var(--l-cta-hover);
+  --tint: rgb(var(--l-accent-rgb) / 0.08);
+  --focus: var(--l-cta-bg);
+}
+
 :root {
-  /* Палитра. Контраст по WCAG 2.2 (AA ≥ 4.5 : 1 для текста):
-     на тёмном (deep / green / surface): ivory 14.9 / 13.3 / 11.4,
-     mist 8.4 / 7.5 / 6.5, label 7.0 / 6.3 / 5.4, bronze-text 7.5 / 6.7 / 5.7;
-     bronze 6.3 / 5.6 / 4.8 — кнопка (тёмный текст на бронзе 5.6) и графика.
-     На светлом (card / granite / stone): ink 15.4 / 13.5 / 12.1,
-     slate 6.6 / 5.8 / 5.2, bronze-deep 6.6 / 5.8 / 5.2.
-     Текст на тёмном — тёплая «слоновая кость», не чистый белый. */
-  --c-deep: #0A1714;
-  --c-green: #10231F;
-  --c-surface: #17302A;
-  --c-granite: #ECE6E0;
-  --c-stone: #E2DAD2;
-  --c-card: #F8F5F1;
-  --c-ink: #15201D;
-  --c-slate: #4E5A56;
-  --c-ivory: #EEE7DA;
-  --c-mist: #A9B2AB;
-  --c-label: #97A39C;
-  --c-bronze: #BE8E5C;
-  --c-bronze-light: #D3A877;
-  --c-bronze-text: #C99D6E;
-  --c-bronze-deep: #7A4E26;
-
-  /* Тема по умолчанию = theme-dark. Компоненты берут цвета только из ролей;
-     тема секции переопределяет роли, а не компоненты. */
-  --bg: var(--c-green);
-  --bg-alt: var(--c-surface);
-  --fg: var(--c-ivory);
-  --muted: var(--c-mist);
-  --label: var(--c-label);
-  --line: rgba(238, 231, 218, 0.13);
-  --line-strong: rgba(238, 231, 218, 0.26);
-  --card: var(--c-surface);
-  --accent: var(--c-bronze);
-  --accent-text: var(--c-bronze-text);
-  --cta-bg: var(--c-bronze);
-  --cta-fg: var(--c-green);
-  --cta-hover: var(--c-bronze-light);
-  --tint: rgba(190, 142, 92, 0.1);
-  --focus: var(--c-ivory);
-
   --font: 'Geologica', 'Geologica Fallback', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 
   /* Шкала: clamp() плавно между 320 и 1440 px; rem-слагаемое сохраняет
@@ -218,8 +376,8 @@ html {
 
 body {
   min-height: 100vh;
-  background-color: var(--c-green);
-  color: var(--c-ivory);
+  background-color: var(--p-deep);
+  color: var(--d-fg);
   font-family: var(--font);
   font-size: var(--fs-body);
   font-weight: 400;
@@ -258,8 +416,8 @@ a[href^='tel:'] {
 }
 
 ::selection {
-  background-color: var(--c-bronze);
-  color: var(--c-green);
+  background-color: var(--d-accent);
+  color: var(--d-cta-fg);
 }
 
 :focus-visible {
@@ -351,7 +509,9 @@ a[href^='tel:'] {
   border-block: 1px solid var(--line-strong);
 }
 
-.theme-dark,
+/* Темы секций: фон из палитры; схема ролей — выше */
+.theme-hero,
+.theme-band,
 .theme-deep,
 .theme-light,
 .theme-paper {
@@ -359,42 +519,19 @@ a[href^='tel:'] {
   color: var(--fg);
 }
 
-.theme-deep {
-  --bg: var(--c-deep);
-  --bg-alt: var(--c-green);
-  --card: var(--c-green);
-}
-
-/* Светлые фоны — тёплый розовато-серый гранит, а не кремовая бумага */
-.theme-light,
-.theme-paper {
-  --bg: var(--c-granite);
-  --bg-alt: var(--c-stone);
-  --fg: var(--c-ink);
-  --muted: var(--c-slate);
-  --label: var(--c-slate);
-  --line: rgba(21, 32, 29, 0.14);
-  --line-strong: rgba(21, 32, 29, 0.3);
-  --card: var(--c-card);
-  --accent: var(--c-bronze-deep);
-  --accent-text: var(--c-bronze-deep);
-  --cta-bg: var(--c-green);
-  --cta-fg: var(--c-card);
-  --cta-hover: var(--c-surface);
-  --tint: rgba(122, 78, 38, 0.07);
-  --focus: var(--c-green);
-}
-
-.theme-paper {
-  --bg: var(--c-stone);
-  --bg-alt: var(--c-granite);
-}
+.theme-hero { --bg: var(--p-hero); }
+.theme-band { --bg: var(--p-band); }
+.theme-deep { --bg: var(--p-deep); }
+.theme-light { --bg: var(--p-light); }
+.theme-paper { --bg: var(--p-paper); }
 
 /* Фактура гранита: едва заметная зернистость на светлых секциях —
    намёк на камень набережной вместо пластиковой заливки. SVG-шум
    в data-URI: ни одного запроса, тайл рисуется один раз. */
 .theme-light::after,
-.theme-paper::after {
+.theme-paper::after,
+.palette-a .theme-hero::after,
+.palette-b .theme-band::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -434,8 +571,8 @@ a[href^='tel:'] {
   z-index: 100;
   padding: 0.75rem 1.125rem;
   border-radius: var(--radius);
-  background-color: var(--c-ivory);
-  color: var(--c-green);
+  background-color: var(--d-fg);
+  color: var(--p-deep);
   font-weight: 600;
   text-decoration: none;
   transform: translateY(-200%);
@@ -544,13 +681,13 @@ a[href^='tel:'] {
 }
 
 
-/* ----- Шапка: тёмно-зелёная полупрозрачная, поверх любых секций ----- */
+/* ----- Шапка: тёмная полупрозрачная (--p-deep палитры), поверх любых секций ----- */
 
 .header {
   position: relative;
   z-index: 50;
-  background-color: var(--c-deep);
-  color: var(--c-ivory);
+  background-color: var(--p-deep);
+  color: var(--d-fg);
 }
 
 .js .header {
@@ -558,7 +695,7 @@ a[href^='tel:'] {
   top: 0;
   right: 0;
   left: 0;
-  background-color: rgba(10, 23, 20, 0.9);
+  background-color: rgb(var(--p-deep-rgb) / 0.96);
   border-bottom: 1px solid transparent;
   transition:
     transform var(--t-hover) var(--ease-out),
@@ -570,15 +707,21 @@ a[href^='tel:'] {
    контейнером для fixed-потомков, и fixed-меню «схлопнулось» бы. */
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
   .js .header {
-    background-color: rgba(10, 23, 20, 0.68);
+    background-color: rgb(var(--p-deep-rgb) / 0.88);
     -webkit-backdrop-filter: blur(16px);
     backdrop-filter: blur(16px);
   }
 }
 
 .js .header--solid {
-  background-color: rgba(10, 23, 20, 0.94);
-  border-bottom-color: rgba(190, 142, 92, 0.22);
+  background-color: rgb(var(--p-deep-rgb) / 0.97);
+  border-bottom-color: rgb(var(--d-accent-rgb) / 0.22);
+}
+
+/* A: под шапкой светлый первый экран — полупрозрачная синяя шапка над ним
+   выглядела бы серой, поэтому она сплошная */
+.palette-a.js .header {
+  background-color: var(--p-deep);
 }
 
 .header--hidden {
@@ -590,7 +733,7 @@ a[href^='tel:'] {
 }
 
 .is-menu-open .header {
-  background-color: var(--c-deep);
+  background-color: var(--p-deep);
 }
 
 .header-sentinel {
@@ -623,9 +766,9 @@ a[href^='tel:'] {
   gap: 0.5rem;
   min-height: 2.75rem;
   padding: 0.5rem 1.125rem;
-  border: 1px solid rgba(190, 142, 92, 0.6);
+  border: 1px solid rgb(var(--d-accent-rgb) / 0.6);
   border-radius: var(--radius);
-  color: var(--c-ivory);
+  color: var(--d-fg);
   font-size: var(--fs-small);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
@@ -636,7 +779,7 @@ a[href^='tel:'] {
 .header__phone .icon {
   width: 1rem;
   height: 1rem;
-  color: var(--c-bronze);
+  color: var(--d-accent);
 }
 
 .brand {
@@ -645,7 +788,7 @@ a[href^='tel:'] {
   gap: 0.75rem;
   min-height: 2.75rem;
   margin-right: auto;
-  color: var(--c-ivory);
+  color: var(--d-fg);
   line-height: 1.25;
   text-decoration: none;
 }
@@ -671,7 +814,7 @@ a[href^='tel:'] {
 /* Ниже 360 px подпись не помещается рядом с бургером — остаётся только имя */
 .brand__role {
   display: none;
-  color: var(--c-mist);
+  color: var(--d-muted);
   font-size: var(--fs-micro);
   font-weight: 400;
   white-space: nowrap;
@@ -694,7 +837,7 @@ a[href^='tel:'] {
   min-height: 2.75rem;
   margin-right: -0.5rem;
   padding-inline: 0.5rem;
-  color: var(--c-ivory);
+  color: var(--d-fg);
   font-size: var(--fs-small);
   font-weight: 600;
 }
@@ -752,7 +895,7 @@ a[href^='tel:'] {
   padding: 0.5rem max(var(--gutter), env(safe-area-inset-right)) calc(2rem + env(safe-area-inset-bottom)) max(var(--gutter), env(safe-area-inset-left));
   overflow-y: auto;
   overscroll-behavior: contain;
-  background-color: var(--c-deep);
+  background-color: var(--p-deep);
   opacity: 0;
   visibility: hidden;
   transform: translateY(-0.5rem);
@@ -776,7 +919,7 @@ a[href^='tel:'] {
 }
 
 .menu__phone {
-  color: var(--c-ivory);
+  color: var(--d-fg);
   font-size: 1.625rem;
   font-weight: 650;
   font-variant-numeric: tabular-nums;
@@ -785,7 +928,7 @@ a[href^='tel:'] {
 
 .menu__hours {
   margin-top: -0.75rem;
-  color: var(--c-mist);
+  color: var(--d-muted);
   font-size: var(--fs-small);
 }
 
@@ -808,7 +951,7 @@ a[href^='tel:'] {
 .nav__link {
   display: inline-block;
   padding-block: 0.5rem;
-  color: var(--c-ivory);
+  color: var(--d-fg);
   font-weight: 500;
   text-decoration: none;
   white-space: nowrap;
@@ -821,7 +964,7 @@ a[href^='tel:'] {
 .js .nav__link {
   display: block;
   padding-block: 1.125rem;
-  border-bottom: 1px solid rgba(238, 231, 218, 0.08);
+  border-bottom: 1px solid rgb(var(--d-fg-rgb) / 0.08);
   font-size: 1.75rem;
   font-weight: 600;
   letter-spacing: -0.02em;
@@ -835,7 +978,7 @@ a[href^='tel:'] {
   width: 0.4375rem;
   height: 0.4375rem;
   margin-left: 0.875rem;
-  background-color: var(--c-bronze);
+  background-color: var(--d-accent);
   vertical-align: middle;
   transform: rotate(45deg);
 }
@@ -843,8 +986,11 @@ a[href^='tel:'] {
 
 /* ----- Первый экран ----- */
 
-/* Без фото и без декоративных пятен: ровный зелёный, имя — как латунная
-   табличка, справа оглавление направлений. */
+/* Портрет — главный акцент экрана: справа на планшете и десктопе, над
+   именем на телефоне. Кадр 4 : 5 показывается целиком (object-fit не режет:
+   пропорции блока и снимка совпадают) — лицо не обрезается ни на одной
+   ширине. Рамка «в тон»: паспарту цвета карточки темы и тонкий кант
+   акцентного цвета в 10 px от края снимка, как у латунной рамки. */
 .hero {
   position: relative;
   isolation: isolate;
@@ -856,12 +1002,52 @@ a[href^='tel:'] {
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1fr);
-  padding-block: 2.25rem clamp(2.5rem, 1.786rem + 3.571vw, 4rem);
+  gap: 1.5rem;
+  padding-block: 1.25rem clamp(2.5rem, 1.786rem + 3.571vw, 4rem);
 }
 
 /* С JS шапка фиксированная — первый экран уходит под неё */
 .js .hero__inner {
-  padding-top: calc(var(--header-h) + 2.25rem);
+  padding-top: calc(var(--header-h) + 1.25rem);
+}
+
+/* Телефон: высота портрета — то, что остаётся от экрана после шапки
+   и текста до кнопки «Позвонить» (≈ 32 rem, замер на 320–430 px), но не
+   меньше 9.5 rem и не больше 21 rem: кнопка — в первом экране и на
+   iPhone SE (375 × 667), а на больших телефонах портрет крупнее. */
+.hero__portrait {
+  justify-self: start;
+  height: clamp(9.5rem, 100vh - 32rem, 21rem);
+  height: clamp(9.5rem, 100svh - 32rem, 21rem);
+  aspect-ratio: 4 / 5;
+  margin: 0;
+  padding: 0.375rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background-color: var(--card);
+}
+
+.hero__portrait picture {
+  position: relative;
+  display: block;
+  height: 100%;
+  overflow: hidden;
+  background-color: var(--p-plate);
+}
+
+.hero__portrait picture::after {
+  content: '';
+  position: absolute;
+  inset: 8%;
+  inset: min(10px, 6%);
+  border: 1px solid rgb(var(--d-accent-rgb) / 0.6);
+  pointer-events: none;
+}
+
+.hero__photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
 .hero__content {
@@ -870,7 +1056,7 @@ a[href^='tel:'] {
 
 .hero__meta {
   max-width: 34rem;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1rem;
   color: var(--muted);
   font-size: var(--fs-micro);
   font-weight: 500;
@@ -896,27 +1082,27 @@ a[href^='tel:'] {
 .hero__given {
   display: block;
   margin-top: 0.3em;
-  color: #DDD5C6;
+  color: var(--strong);
   font-size: 0.5em;
   font-weight: 300;
   letter-spacing: -0.01em;
   line-height: 1.15;
 }
 
-/* Двойная бронзовая линейка под именем — нижний край «таблички» */
+/* Двойная линейка под именем — нижний край «таблички» */
 .hero__title::after {
   content: '';
   display: block;
   width: 4.5rem;
   height: var(--rule);
-  margin-top: clamp(1.25rem, 1rem + 1vw, 1.75rem);
+  margin-top: clamp(1rem, 0.75rem + 1vw, 1.75rem);
   border-block: 1px solid var(--accent);
 }
 
 .hero__lead {
   max-width: 36rem;
-  margin-top: clamp(1.25rem, 1rem + 1vw, 1.75rem);
-  color: #D3CCBF;              /* 10.6 : 1 — главный абзац экрана, светлее muted */
+  margin-top: clamp(1rem, 0.75rem + 1vw, 1.75rem);
+  color: var(--strong);
   font-size: var(--fs-lead);
   line-height: 1.5;
 }
@@ -924,7 +1110,7 @@ a[href^='tel:'] {
 .hero__actions {
   display: grid;
   gap: 0.75rem;
-  margin-top: 1.75rem;
+  margin-top: 1.5rem;
 }
 
 .hero__more {
@@ -943,88 +1129,13 @@ a[href^='tel:'] {
 }
 
 .hero__note {
-  color: var(--c-bronze-text);
+  color: var(--accent-text);
   font-size: var(--fs-small);
   font-weight: 600;
-}
-
-/* Оглавление направлений */
-.hero__index {
-  margin-top: 3rem;
-}
-
-.hero__index-title {
-  margin-bottom: 0.75rem;
-  color: var(--muted);
-  font-size: var(--fs-small);
-  font-weight: 500;
-}
-
-.index {
-  border-top: 1px solid var(--line-strong);
-}
-
-/* Строка оглавления целиком — ссылка. При наведении слева вырастает
-   бронзовая черта (scaleY на композиторе), стрелка уходит вправо. */
-.index__link {
-  position: relative;
-  display: grid;
-  grid-template-columns: 2.75rem minmax(0, 1fr) auto;
-  align-items: baseline;
-  gap: 0.75rem;
-  padding: 1.125rem 0.25rem 1.125rem 0;
-  border-bottom: 1px solid var(--line-strong);
-  color: var(--fg);
-  text-decoration: none;
-}
-
-.index__link::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  bottom: -1px;
-  left: -1rem;
-  width: 2px;
-  background-color: var(--accent);
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform var(--t-hover) var(--ease-out);
-}
-
-.index__num {
-  justify-self: start;
-  color: var(--accent);
-  font-size: 1.375rem;
-  font-weight: 300;
-}
-
-.index__body {
-  display: grid;
-  gap: 0.25rem;
-}
-
-.index__name {
-  font-size: 1.125rem;
-  font-weight: 600;
-  line-height: 1.3;
-}
-
-.index__desc {
-  color: var(--muted);
-  font-size: var(--fs-small);
-  line-height: 1.45;
-}
-
-.index__arrow {
-  align-self: center;
-  width: 1.125rem;
-  height: 1.125rem;
-  color: var(--accent);
-  transition: transform var(--t-hover) var(--ease-out);
 }
 
 /* Появление первого экрана — единственная анимация на странице: текст под
-   именем и оглавление проявляются и чуть поднимаются. Имя и строка над ним
+   именем проявляется и чуть поднимается. Имя, строка над ним и портрет
    не анимируются (LCP: элемент с opacity: 0 не считается отрисованным).
    Страховка покажет всё через 4 с, даже если main.js не загрузился. */
 .js [data-intro] {
@@ -1044,27 +1155,26 @@ a[href^='tel:'] {
 .is-loaded .hero__lead { transition-delay: 0.1s; }
 .is-loaded .hero__actions { transition-delay: 0.2s; }
 .is-loaded .hero__more { transition-delay: 0.3s; }
-.is-loaded .hero__index { transition-delay: 0.4s; }
 
 
-/* ----- Цоколь первого экрана ----- */
+/* ----- Цоколь первого экрана: приём и два офиса ----- */
 
 .plinth {
   position: relative;
   isolation: isolate;
-  border-top: 1px solid rgba(190, 142, 92, 0.28);
+  border-top: 1px solid rgb(var(--d-accent-rgb) / 0.28);
 }
 
 .plinth__list {
   display: grid;
 }
 
+/* На телефоне — подпись над значением: «Великий Новгород» не влез бы
+   в узкую колонку подписи */
 .plinth__item {
   display: grid;
-  grid-template-columns: 4.5rem minmax(0, 1fr);
-  align-items: baseline;
-  gap: 1rem;
-  padding-block: 0.875rem;
+  gap: 0.125rem;
+  padding-block: 0.75rem;
   border-bottom: 1px solid var(--line);
 }
 
@@ -1081,6 +1191,97 @@ a[href^='tel:'] {
 .plinth__value {
   font-size: var(--fs-small);
   font-weight: 500;
+  line-height: 1.5;
+}
+
+
+/* ----- Направления: полоса под первым экраном ----- */
+
+/* Три карточки-ссылки на главы. Римские цифры — те же, что у глав ниже.
+   При наведении слева вырастает акцентная черта (scaleY на композиторе),
+   стрелка уходит вправо. */
+.directions {
+  position: relative;
+  isolation: isolate;
+  padding-block: clamp(2.25rem, 1.75rem + 2.5vw, 4rem);
+}
+
+.directions > .container {
+  position: relative;
+  z-index: 1;
+}
+
+.directions__title {
+  margin-bottom: 1.25rem;
+  font-size: var(--fs-h3);
+  font-weight: 600;
+}
+
+.directions__list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.direction {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-content: start;
+  gap: 0.75rem 1rem;
+  height: 100%;
+  padding: 1.375rem 1.375rem 1.5rem;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background-color: var(--card);
+  color: var(--fg);
+  text-decoration: none;
+  transition: border-color var(--t-hover) var(--ease-out);
+}
+
+.direction::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 3px;
+  background-color: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+  transition: transform var(--t-hover) var(--ease-out);
+}
+
+.direction__num {
+  justify-self: start;
+  color: var(--accent);
+  font-size: 1.375rem;
+  font-weight: 300;
+}
+
+.direction__arrow {
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--accent);
+  transition: transform var(--t-hover) var(--ease-out);
+}
+
+.direction__body {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 0.375rem;
+}
+
+.direction__name {
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.direction__desc {
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
 }
 
 
@@ -1448,43 +1649,8 @@ a[href^='tel:'] {
   gap: var(--space-block);
 }
 
-/* Портрет без паспарту: снимок в край, внутри — тонкий бронзовый «филёнчатый»
-   кант в 10 px от края, как рама с латунной вставкой. Подпись — под снимком. */
-.about__photo {
-  width: 100%;
-  max-width: 26rem;
-  margin: 0;
-}
-
-.about__photo picture {
-  position: relative;
-  display: block;
-  aspect-ratio: 4 / 5;
-  overflow: hidden;
-  border-radius: var(--radius);
-  background-color: var(--c-green);
-}
-
-.about__photo picture::after {
-  content: '';
-  position: absolute;
-  inset: 10px;
-  border: 1px solid rgba(211, 168, 119, 0.55);
-  pointer-events: none;
-}
-
-.about__img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.about__caption {
-  margin-top: 0.75rem;
-  color: var(--muted);
-  font-size: var(--fs-micro);
-}
-
+/* Портрет — в первом экране; здесь второй раз тот же снимок не ставим.
+   Слева заголовок и цитата (на десктопе — липкие), справа текст. */
 /* Цитата: крупно, «ёлочка» висит на полях — левый край текста ровный */
 .about__quote {
   max-width: 38rem;
@@ -1512,7 +1678,6 @@ a[href^='tel:'] {
   display: grid;
   gap: 1rem;
   max-width: 38rem;
-  margin-top: var(--space-block);
 }
 
 /* Опыт до адвокатуры и образование — одной строкой, мелко, под двойной линейкой */
@@ -1568,28 +1733,18 @@ a[href^='tel:'] {
   align-items: start;
 }
 
-/* Бесплатная консультация — тёмная табличка с двойной рамкой: локально
-   переключает роли на тёмную схему. */
+/* Бесплатная консультация — тёмная табличка с двойной рамкой. В HTML у неё
+   класс scheme-dark: роли тёмной схемы при любой палитре. */
 .pricing__lead {
-  --fg: var(--c-ivory);
-  --muted: var(--c-mist);
-  --accent: var(--c-bronze);
-  --accent-text: var(--c-bronze-text);
-  --line-strong: rgba(238, 231, 218, 0.26);
-  --cta-bg: var(--c-bronze);
-  --cta-fg: var(--c-green);
-  --cta-hover: var(--c-bronze-light);
-  --focus: var(--c-ivory);
-
   position: relative;
   z-index: 1;
   padding: clamp(1.75rem, 1.464rem + 1.429vw, 2.75rem);
-  border: 1px solid var(--c-green);
+  border: 1px solid var(--p-plate);
   border-radius: var(--radius);
-  background-color: var(--c-green);
+  background-color: var(--p-plate);
   box-shadow:
-    inset 0 0 0 7px var(--c-green),
-    inset 0 0 0 8px rgba(190, 142, 92, 0.5);
+    inset 0 0 0 7px var(--p-plate),
+    inset 0 0 0 8px rgb(var(--d-accent-rgb) / 0.5);
   color: var(--fg);
 }
 
@@ -1710,7 +1865,7 @@ a[href^='tel:'] {
 }
 
 .contacts__link {
-  text-decoration-color: rgba(190, 142, 92, 0.6);
+  text-decoration-color: rgb(var(--d-accent-rgb) / 0.6);
 }
 
 .contacts__actions {
@@ -1729,6 +1884,76 @@ a[href^='tel:'] {
   margin-top: 0.875rem;
   color: var(--muted);
   font-size: var(--fs-micro);
+}
+
+/* Два офиса — две карточки над картой: город, адрес, ссылка на Яндекс Карты
+   и (с JS) кнопка «Показать на карте», которая переключает встроенную карту. */
+.offices {
+  display: grid;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+/* Ссылки прижаты к низу карточки: у двух офисов они на одной линии,
+   даже когда адрес в Новгороде переносится на вторую строку */
+.office {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  padding: 1.25rem 1.25rem 1.125rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background-color: var(--card);
+}
+
+.office__city {
+  font-size: var(--fs-h3);
+  line-height: 1.25;
+}
+
+.office__address {
+  color: var(--muted);
+  font-size: var(--fs-small);
+  line-height: 1.5;
+}
+
+.office__links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0 1.25rem;
+  margin-top: auto;
+  padding-top: 0.375rem;
+  font-size: var(--fs-small);
+}
+
+.office__links .link-arrow {
+  min-height: 2.75rem;
+}
+
+/* Кнопка карты: без JS не видна (атрибут hidden снимает main.js). Нажатая —
+   с акцентной двойной чертой, как активный пункт меню. */
+.office__show {
+  position: relative;
+  min-height: 2.75rem;
+  padding-inline: 0;
+  color: var(--muted);
+  font-size: var(--fs-small);
+  font-weight: 600;
+}
+
+.office__show[aria-pressed='true'] {
+  color: var(--fg);
+}
+
+.office__show[aria-pressed='true']::after {
+  content: '';
+  position: absolute;
+  right: 0;
+  bottom: 0.5rem;
+  left: 0;
+  height: var(--rule);
+  border-block: 1px solid var(--accent);
 }
 
 /* width: 100% обязателен: иначе aspect-ratio переносит min-height в ширину
@@ -1756,8 +1981,8 @@ a[href^='tel:'] {
   gap: 0.75rem;
   padding: 1.5rem;
   background-image:
-    radial-gradient(circle at 50% 45%, rgba(190, 142, 92, 0.14), transparent 42%),
-    linear-gradient(rgba(238, 231, 218, 0.05) 1px, transparent 1px);
+    radial-gradient(circle at 50% 45%, var(--tint), transparent 42%),
+    linear-gradient(var(--line) 1px, transparent 1px);
   background-position: center;
   background-size: auto, 100% 1.5rem;
   text-align: center;
@@ -1793,7 +2018,7 @@ a[href^='tel:'] {
 .footer {
   position: relative;
   padding-block: 3rem calc(3rem + var(--bar-h) + env(safe-area-inset-bottom));
-  border-top: 1px solid rgba(190, 142, 92, 0.22);
+  border-top: 1px solid rgb(var(--d-accent-rgb) / 0.22);
   font-size: var(--fs-small);
 }
 
@@ -1817,17 +2042,17 @@ a[href^='tel:'] {
 .footer__links a {
   display: inline-block;
   padding-block: 0.25rem;
-  color: var(--c-mist);
+  color: var(--d-muted);
   text-decoration: none;
 }
 
 .footer__links--ext a {
   text-decoration: underline;
-  text-decoration-color: rgba(190, 142, 92, 0.5);
+  text-decoration-color: rgb(var(--d-accent-rgb) / 0.5);
 }
 
 .footer__note {
-  color: var(--c-mist);
+  color: var(--d-muted);
   font-size: var(--fs-micro);
 }
 
@@ -1843,8 +2068,8 @@ a[href^='tel:'] {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom);
-  border-top: 1px solid rgba(190, 142, 92, 0.3);
-  background-color: var(--c-deep);
+  border-top: 1px solid rgb(var(--d-accent-rgb) / 0.3);
+  background-color: var(--p-deep);
 }
 
 /* С JS панель скрыта, пока видны кнопки первого экрана; transform не даёт CLS */
@@ -1877,8 +2102,8 @@ a[href^='tel:'] {
   gap: 0.5rem;
   min-height: var(--bar-h);
   padding-inline: 0.5rem;
-  border-left: 1px solid rgba(238, 231, 218, 0.1);
-  color: var(--c-ivory);
+  border-left: 1px solid rgb(var(--d-fg-rgb) / 0.1);
+  color: var(--d-fg);
   font-size: var(--fs-small);
   font-weight: 600;
   text-decoration: none;
@@ -1890,8 +2115,8 @@ a[href^='tel:'] {
 }
 
 .mobile-bar__btn--primary {
-  background-color: var(--c-bronze);
-  color: var(--c-green);
+  background-color: var(--d-accent);
+  color: var(--d-cta-fg);
 }
 
 
@@ -1995,6 +2220,35 @@ a[href^='tel:'] {
     flex-wrap: wrap;
   }
 
+  /* Планшет и шире: текст слева, портрет справа. Ширина портрета — не больше
+     колонки, 30 rem и того, что помещается по высоте экрана за вычетом шапки,
+     цоколя и полей (15.5 rem); высота следует из пропорции 4 : 5. */
+  .hero__inner {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: center;
+    column-gap: clamp(2rem, 5vw, 6rem);
+  }
+
+  .hero__content {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .hero__portrait {
+    grid-column: 2;
+    grid-row: 1;
+    justify-self: end;
+    width: min(100%, 30rem, (100vh - 15.5rem) * 0.8);
+    width: min(100%, 30rem, (100svh - 15.5rem) * 0.8);
+    height: auto;
+    padding: 0.5rem;
+  }
+
+  .directions__list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
   /* Цоколь — три факта в строку, разделены вертикальными линиями */
   .plinth__list {
     grid-template-columns: repeat(3, auto);
@@ -2034,8 +2288,8 @@ a[href^='tel:'] {
     text-align: right;
   }
 
-  .about__photo {
-    max-width: 22rem;
+  .offices {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .pricing {
@@ -2096,7 +2350,7 @@ a[href^='tel:'] {
     position: relative;
     padding-block: 0.5rem;
     border-bottom: 0;
-    color: #C3C7BF;
+    color: var(--d-strong);
     font-size: var(--fs-small);
     font-weight: 500;
     letter-spacing: 0;
@@ -2104,7 +2358,7 @@ a[href^='tel:'] {
   }
 
   .js .nav__link--active {
-    color: var(--c-ivory);
+    color: var(--d-fg);
   }
 
   /* Активный пункт на десктопе — двойная бронзовая черта под словом */
@@ -2118,7 +2372,7 @@ a[href^='tel:'] {
     width: auto;
     height: var(--rule);
     margin: 0;
-    border-block: 1px solid var(--c-bronze);
+    border-block: 1px solid var(--d-accent);
     background: none;
     transform: scaleX(0);
     transform-origin: left;
@@ -2129,23 +2383,16 @@ a[href^='tel:'] {
     transform: none;
   }
 
-  /* Первый экран вместе с цоколем занимает ровно экран: имя и оглавление —
+  /* Первый экран вместе с цоколем занимает ровно экран: имя и портрет —
      по центру высоты, цоколь — нижний край. 4.75rem — высота цоколя. */
   .hero__inner {
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    align-items: center;
-    column-gap: clamp(3rem, 6vw, 6.5rem);
     min-height: calc(100vh - 4.75rem);
     min-height: calc(100svh - 4.75rem);
-    padding-bottom: 4rem;
+    padding-bottom: 3rem;
   }
 
   .js .hero__inner {
     padding-top: calc(var(--header-h) + 3rem);
-  }
-
-  .hero__index {
-    margin-top: 0;
   }
 
   .hero__messengers {
@@ -2218,14 +2465,18 @@ a[href^='tel:'] {
     align-items: start;
   }
 
-  .about__photo,
+  .about__head,
   .pricing__lead {
     position: sticky;
     top: calc(var(--header-h) + 1.5rem);
   }
 
-  .about__photo {
-    max-width: 26rem;
+  .about__body {
+    padding-top: calc(var(--rule) + 1.25rem);
+  }
+
+  .about__text {
+    margin-top: 0;
   }
 
   .contacts {
@@ -2283,7 +2534,7 @@ a[href^='tel:'] {
   }
 
   .header__phone:hover {
-    border-color: var(--c-bronze-light);
+    border-color: var(--d-accent-hover);
   }
 
   .link-arrow:hover .icon {
@@ -2294,20 +2545,24 @@ a[href^='tel:'] {
     transform: translate(2px, -2px);
   }
 
-  .index__link:hover::before {
+  .direction:hover {
+    border-color: var(--line-strong);
+  }
+
+  .direction:hover::before {
     transform: none;
   }
 
-  .index__link:hover .index__arrow {
+  .direction:hover .direction__arrow {
     transform: translateX(4px);
   }
 
   .footer__links a:hover {
-    color: var(--c-ivory);
+    color: var(--d-fg);
   }
 
   .mobile-bar__btn--primary:hover {
-    background-color: var(--c-bronze-light);
+    background-color: var(--d-accent-hover);
   }
 }
 

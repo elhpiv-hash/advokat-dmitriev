@@ -8,15 +8,20 @@
 #       assets/img/dmitriev-800.jpg               (для браузеров без AVIF/WebP)
 #     Кадр — 4 : 5, обрезка по «интересной» области (лицо), а не по центру.
 #     ПОКА ИСХОДНИКА НЕТ — те же файлы рисуются как аккуратная заглушка:
-#     тёмно-зелёное поле с монограммой «ДА» в двойной бронзовой рамке.
+#     монограмма «ДА» в двойной рамке на ПРОЗРАЧНОМ фоне (AVIF/WebP) —
+#     фон даёт CSS (--p-plate), поэтому заглушка подходит к любой палитре.
 #     Заменить фото = положить файл в assets/img/src/ и запустить скрипт;
 #     index.html трогать не нужно — пути у фото и заглушки одинаковые.
 #  2. assets/img/og-cover.jpg (1200 × 630) — превью ссылки в мессенджерах:
 #     имя, направления, телефон и портрет (или заглушка). Текст переводится
 #     в контуры прямо из woff2 Geologica — браузер и системные шрифты не нужны.
-#  3. favicon.ico (16, 32, 48 px) — из assets/img/favicon.svg.
+#  3. assets/img/favicon.svg и favicon.ico (16, 32, 48 px).
+#
+#  Цвета og-cover, favicon и фона JPG — из палитры сайта (как класс
+#  palette-… на <html> в index.html): переменная PALETTE, a/b/c/d, по умолчанию d.
 #
 #  Запуск:   bash build-images.sh
+#            PALETTE=a bash build-images.sh
 #  Нужен Node.js 18+. sharp, fontkit и wawoff2 ставятся во временную папку
 #  при каждом запуске (npm берёт их из кэша) — в проекте нет package.json
 #  и node_modules, как и у build.sh.
@@ -35,6 +40,12 @@ if ! command -v npm >/dev/null 2>&1; then
   echo "Ошибка: не найден npm. Установите Node.js 18+ (https://nodejs.org)." >&2
   exit 1
 fi
+
+PALETTE="${PALETTE:-d}"
+case "$PALETTE" in
+  a|b|c|d) ;;
+  *) echo "Ошибка: PALETTE=$PALETTE — нужна a, b, c или d." >&2; exit 1 ;;
+esac
 
 # Временная папка под зависимости и сам скрипт; удаляется при любом выходе.
 TMP="$(mktemp -d)"
@@ -56,14 +67,21 @@ const IMG = 'assets/img';
 const SRC = path.join(IMG, 'src');
 const FONTS = 'assets/fonts';
 
-const C = {
-  deep: '#0A1714', green: '#10231F', surface: '#17302A',
-  ivory: '#EEE7DA', given: '#DDD5C6', lead: '#D3CCBF', mist: '#A9B2AB',
-  bronze: '#BE8E5C', bronzeText: '#C99D6E'
+// Цвета тёмной схемы палитр — те же, что --p-plate и --d-* в css/style.css
+const PALETTES = {
+  d: { plate: '#10231F', fg: '#EEE7DA', strong: '#D3CCBF', muted: '#A9B2AB', accent: '#BE8E5C', accentText: '#C99D6E' },
+  a: { plate: '#17345F', fg: '#F4EFE6', strong: '#E2DCD0', muted: '#B9C3D6', accent: '#C9A262', accentText: '#D9B878' },
+  b: { plate: '#1D4E8F', fg: '#FFFFFF', strong: '#EEF3FA', muted: '#D3DFF0', accent: '#F2C46D', accentText: '#F7D489' },
+  c: { plate: '#22665B', fg: '#FFFFFF', strong: '#F0F6F3', muted: '#DDECE7', accent: '#E3B85F', accentText: '#F8E0A8' }
 };
+const PALETTE = process.argv[2] || 'd';
+const C = PALETTES[PALETTE];
 
 // Монограмма «ДА» — те же контуры Geologica 600, что в спрайте index.html (viewBox 48)
+// и, крупнее, в favicon (viewBox 64)
 const MONO = 'M18.94 30.5L18.94 20.02L14.6 20.02L14.6 21.28Q14.6 23.55 14.36 25.17Q14.13 26.8 13.63 27.86Q13.12 28.93 12.28 29.55Q11.45 30.18 10.25 30.46L9.29 28.17Q10.11 27.98 10.64 27.6Q11.16 27.22 11.46 26.47Q11.76 25.73 11.87 24.47Q11.99 23.21 11.99 21.28L11.99 17.5L21.69 17.5L21.69 30.5ZM9.29 33.79L9.29 28.17L10.94 28.24L11.84 27.98L23.78 27.98L23.78 33.79L21.17 33.79L21.17 30.5L11.9 30.5L11.9 33.79ZM25.66 30.5L30.58 17.5L33.71 17.5L38.71 30.5L35.61 30.5L34.6 27.71L29.65 27.71L28.67 30.5ZM30.3 25.39L33.93 25.39L32.09 20.52Z';
+
+const MONO_64 = 'M25.06 40.75L25.06 26.71L19.33 26.71L19.33 28.33Q19.33 31.38 19.01 33.56Q18.69 35.74 18 37.18Q17.31 38.63 16.18 39.47Q15.05 40.31 13.41 40.7L12.11 37.54Q13.21 37.29 13.91 36.78Q14.61 36.26 15.01 35.27Q15.41 34.28 15.57 32.59Q15.73 30.91 15.73 28.33L15.73 23.25L28.85 23.25L28.85 40.75ZM12.11 45.16L12.11 37.54L14.34 37.63L15.58 37.29L31.68 37.29L31.68 45.16L28.08 45.16L28.08 40.75L15.7 40.75L15.7 45.16ZM34.24 40.75L40.85 23.25L45.19 23.25L51.89 40.75L47.61 40.75L46.27 37.04L39.69 37.04L38.39 40.75ZM40.57 33.85L45.36 33.85L42.95 27.39Z';
 
 const kb = (file) => (fs.statSync(file).size / 1024).toFixed(1).padStart(8);
 const log = (file, w, h) => console.log(`  ${path.basename(file).padEnd(20)} ${String(w).padStart(5)} x ${String(h).padEnd(5)} ${kb(file)} KB`);
@@ -78,21 +96,23 @@ function findSource() {
   return null;
 }
 
-// Заглушка 4 : 5: поле с лёгким светом сверху и монограмма в тонкой двойной
-// рамке. Толщина линий задана в пикселях, а не масштабом знака из спрайта:
-// при увеличении в 9 раз рамка 1.25 / 0.75 стала бы тяжёлой.
+// Заглушка 4 : 5: монограмма в тонкой двойной рамке на прозрачном фоне —
+// фон и цвет подложки даёт CSS, поэтому заглушка подходит к любой палитре.
+// Линии и буквы белые полупрозрачные: на тёмной подложке любого варианта.
+// Толщина линий — в пикселях, а не масштабом знака из спрайта: при увеличении
+// в 9 раз рамка 1.25 / 0.75 стала бы тяжёлой.
 function placeholderSvg(w, h) {
   const s = w / 1200;
   const mono = 9 * s;                    // масштаб монограммы: буквы ≈ 117 px на 1200
   const cx = w / 2, cy = h * 0.47;
   return `<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}">
   <defs><radialGradient id="g" cx="50%" cy="38%" r="70%">
-    <stop offset="0" stop-color="${C.surface}"/><stop offset="1" stop-color="${C.green}"/>
+    <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.07"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
   </radialGradient></defs>
   <rect width="${w}" height="${h}" fill="url(#g)"/>
-  <rect x="${cx - 24 * mono}" y="${cy - 24 * mono}" width="${48 * mono}" height="${48 * mono}" fill="none" stroke="${C.bronze}" stroke-width="${Math.max(1, 3 * s)}"/>
-  <rect x="${cx - 19.5 * mono}" y="${cy - 19.5 * mono}" width="${39 * mono}" height="${39 * mono}" fill="none" stroke="${C.bronze}" stroke-opacity="0.7" stroke-width="${Math.max(1, 1.5 * s)}"/>
-  <path transform="translate(${cx - 24 * mono} ${cy - 24 * mono}) scale(${mono})" fill="${C.ivory}" fill-opacity="0.9" d="${MONO}"/>
+  <rect x="${cx - 24 * mono}" y="${cy - 24 * mono}" width="${48 * mono}" height="${48 * mono}" fill="none" stroke="#FFFFFF" stroke-opacity="0.55" stroke-width="${Math.max(1, 3 * s)}"/>
+  <rect x="${cx - 19.5 * mono}" y="${cy - 19.5 * mono}" width="${39 * mono}" height="${39 * mono}" fill="none" stroke="#FFFFFF" stroke-opacity="0.35" stroke-width="${Math.max(1, 1.5 * s)}"/>
+  <path transform="translate(${cx - 24 * mono} ${cy - 24 * mono}) scale(${mono})" fill="#FFFFFF" fill-opacity="0.88" d="${MONO}"/>
 </svg>`;
 }
 
@@ -110,7 +130,7 @@ async function portrait() {
     // attention — кадр по самой «интересной» области (лицо), а не по центру
     make = (w) => sharp(file).rotate().resize(w, Math.round(w * 1.25), { fit: 'cover', position: 'attention' });
   } else {
-    console.log('→ портрет: исходника нет — заглушка с монограммой');
+    console.log('→ портрет: исходника нет — заглушка с монограммой (прозрачный фон)');
     make = (w) => sharp(Buffer.from(placeholderSvg(w, Math.round(w * 1.25))));
   }
 
@@ -125,7 +145,8 @@ async function portrait() {
   }
   const jpg = path.join(IMG, 'dmitriev-800.jpg');
   // mozjpeg + прогрессивная развёртка: меньше вес, снимок проявляется целиком сразу
-  await make(800).flatten({ background: C.green }).jpeg({ quality: 82, mozjpeg: true, progressive: true }).toFile(jpg);
+  // у JPG прозрачности нет — фон заглушки цвета подложки выбранной палитры
+  await make(800).flatten({ background: C.plate }).jpeg({ quality: 82, mozjpeg: true, progressive: true }).toFile(jpg);
   log(jpg, 800, 1000);
 
   return make;
@@ -173,32 +194,32 @@ async function ogCover(fonts, makePortrait) {
   const x = 88;
 
   const parts = [
-    textPath(fonts, 'Адвокат · рег. № 78/5868', { size: 24, weight: 450, x, y: 142, fill: C.mist }),
-    textPath(fonts, 'Дмитриев', { size: 100, weight: 650, x: x - 4, y: 248, fill: C.ivory, tracking: -2 }),
-    textPath(fonts, 'Александр Николаевич', { size: 48, weight: 300, x, y: 312, fill: C.given }),
-    textPath(fonts, 'Арбитраж, взыскание долгов,', { size: 28, weight: 400, x, y: 412, fill: C.lead }),
-    textPath(fonts, 'семейные дела и раздел имущества', { size: 28, weight: 400, x, y: 450, fill: C.lead }),
-    textPath(fonts, 'Санкт-Петербург · Великий Новгород', { size: 24, weight: 450, x, y: 512, fill: C.mist }),
-    textPath(fonts, '+7 (921) 730-03-05', { size: 32, weight: 600, x, y: 560, fill: C.bronzeText })
+    textPath(fonts, 'Адвокат · рег. № 78/5868', { size: 24, weight: 450, x, y: 142, fill: C.muted }),
+    textPath(fonts, 'Дмитриев', { size: 100, weight: 650, x: x - 4, y: 248, fill: C.fg, tracking: -2 }),
+    textPath(fonts, 'Александр Николаевич', { size: 48, weight: 300, x, y: 312, fill: C.strong }),
+    textPath(fonts, 'Арбитраж, взыскание долгов,', { size: 28, weight: 400, x, y: 412, fill: C.strong }),
+    textPath(fonts, 'семейные дела и раздел имущества', { size: 28, weight: 400, x, y: 450, fill: C.strong }),
+    textPath(fonts, 'Санкт-Петербург · Великий Новгород', { size: 24, weight: 450, x, y: 512, fill: C.muted }),
+    textPath(fonts, '+7 (921) 730-03-05', { size: 32, weight: 600, x, y: 560, fill: C.accentText })
   ];
   const widest = Math.max(...parts.map((p) => p.width));
   if (x + widest > px - 32) console.log(`  ! текст (${Math.round(x + widest)} px) заходит на портрет (${px} px)`);
 
   // Без фона: зелёное поле даёт sharp.create, а этот слой ложится поверх портрета
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
-  <rect x="20.5" y="20.5" width="${W - 41}" height="${H - 41}" fill="none" stroke="${C.bronze}" stroke-opacity="0.55" stroke-width="1.5"/>
-  <rect x="27.5" y="27.5" width="${W - 55}" height="${H - 55}" fill="none" stroke="${C.bronze}" stroke-opacity="0.35" stroke-width="1"/>
-  <rect x="${x}" y="344" width="80" height="1.5" fill="${C.bronze}"/>
-  <rect x="${x}" y="348.5" width="80" height="1.5" fill="${C.bronze}"/>
+  <rect x="20.5" y="20.5" width="${W - 41}" height="${H - 41}" fill="none" stroke="${C.accent}" stroke-opacity="0.55" stroke-width="1.5"/>
+  <rect x="27.5" y="27.5" width="${W - 55}" height="${H - 55}" fill="none" stroke="${C.accent}" stroke-opacity="0.35" stroke-width="1"/>
+  <rect x="${x}" y="344" width="80" height="1.5" fill="${C.accent}"/>
+  <rect x="${x}" y="348.5" width="80" height="1.5" fill="${C.accent}"/>
   ${parts.map((p) => p.svg).join('\n  ')}
-  <rect x="${px + 10.5}" y="${py + 10.5}" width="${pw - 21}" height="${ph - 21}" fill="none" stroke="#D3A877" stroke-opacity="0.6" stroke-width="1"/>
+  <rect x="${px + 10.5}" y="${py + 10.5}" width="${pw - 21}" height="${ph - 21}" fill="none" stroke="${C.accent}" stroke-opacity="0.7" stroke-width="1"/>
 </svg>`;
 
   const photo = await makePortrait(pw).resize(pw, ph).png().toBuffer();
   const frame = Buffer.from(svg);
   const out = path.join(IMG, 'og-cover.jpg');
   // Портрет кладётся под SVG: рамка-кант рисуется поверх снимка
-  await sharp({ create: { width: W, height: H, channels: 3, background: C.green } })
+  await sharp({ create: { width: W, height: H, channels: 3, background: C.plate } })
     .composite([{ input: photo, left: px, top: py }, { input: frame, left: 0, top: 0 }])
     .jpeg({ quality: 86, mozjpeg: true, progressive: true })
     .toFile(out);
@@ -210,7 +231,14 @@ async function ogCover(fonts, makePortrait) {
 
 // ICO с PNG внутри (поддерживается всеми браузерами с Windows Vista и IE 9)
 async function favicon() {
-  const svg = fs.readFileSync(path.join(IMG, 'favicon.svg'));
+  const svgText = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="4" fill="${C.plate}"/>
+  <rect x="7" y="7" width="50" height="50" fill="none" stroke="${C.accent}" stroke-width="2.5"/>
+  <path fill="${C.fg}" d="${MONO_64}"/>
+</svg>
+`;
+  fs.writeFileSync(path.join(IMG, 'favicon.svg'), svgText);
+  const svg = Buffer.from(svgText);
   const sizes = [16, 32, 48];
   const pngs = [];
   for (const s of sizes) pngs.push(await sharp(svg, { density: 72 * s / 64 * 4 }).resize(s, s).png().toBuffer());
@@ -244,7 +272,8 @@ async function favicon() {
 })().catch((err) => { console.error('Ошибка:', err.message); process.exit(1); });
 NODE
 
-node "$TMP/build-images.cjs"
+echo "→ палитра: $PALETTE"
+node "$TMP/build-images.cjs" "$PALETTE"
 
 echo
 echo "Готово. index.html менять не нужно: пути к фото и превью прежние."
