@@ -5,7 +5,8 @@
 #  1. Два снимка (исходники в assets/img/src/, подойдут .jpg .jpeg .png .webp):
 #     hero.jpg  — первый экран (фото в полный рост) →
 #                 assets/img/hero-480|800|1200.avif|webp, hero-800.jpg
-#                 Пока его нет, первый экран собирается из about.jpg.
+#                 Пока его нет, в первом экране — заглушка (портрет из about.jpg
+#                 туда не ставим: он уже есть в «Об адвокате»).
 #     about.jpg — портрет в «Об адвокате» →
 #                 assets/img/about-480|800.avif|webp, about-800.jpg
 #     Кадр — 4 : 5, обрезка по «интересной» области (лицо), а не по центру.
@@ -90,8 +91,7 @@ const log = (file, w, h) => console.log(`  ${path.basename(file).padEnd(20)} ${S
 
 /* ----- Портрет ----- */
 
-// Первый найденный исходник из списка имён: ['hero', 'about'] — снимок для
-// первого экрана, а пока его нет — портрет
+// Первый найденный исходник из списка имён
 function findSource(names) {
   for (const name of names) {
     for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
@@ -105,7 +105,7 @@ function findSource(names) {
 // Наборы файлов. Пропорция ratio = высота / ширина; у первого экрана её
 // уточним под фото в полный рост, когда оно будет (сейчас там портрет 4 : 5).
 const SETS = {
-  hero: { sources: ['hero', 'about'], widths: [480, 800, 1200], ratio: 1.25 },
+  hero: { sources: ['hero'], widths: [480, 800, 1200], ratio: 1.25 },
   about: { sources: ['about'], widths: [480, 800], ratio: 1.25 }
 };
 
