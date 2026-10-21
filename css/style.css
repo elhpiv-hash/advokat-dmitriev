@@ -1649,8 +1649,42 @@ a[href^='tel:'] {
   gap: var(--space-block);
 }
 
-/* Портрет — в первом экране; здесь второй раз тот же снимок не ставим.
-   Слева заголовок и цитата (на десктопе — липкие), справа текст. */
+/* Портрет по пояс слева (на десктопе — липкий), справа заголовок, цитата
+   и текст. Снимок в край, внутри — тонкий кант акцентного цвета в 10 px
+   от края, как у портрета в первом экране. Ширина — не больше 20 rem:
+   исходник небольшой (285 px), крупнее он стал бы заметно мягким. */
+.about__photo {
+  width: 100%;
+  max-width: 20rem;
+  margin: 0;
+  padding: 0.375rem;
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius);
+  background-color: var(--card);
+}
+
+.about__photo picture {
+  position: relative;
+  display: block;
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  background-color: var(--p-plate);
+}
+
+.about__photo picture::after {
+  content: '';
+  position: absolute;
+  inset: 10px;
+  border: 1px solid rgb(var(--d-accent-rgb) / 0.6);
+  pointer-events: none;
+}
+
+.about__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
 /* Цитата: крупно, «ёлочка» висит на полях — левый край текста ровный */
 .about__quote {
   max-width: 38rem;
@@ -1678,6 +1712,7 @@ a[href^='tel:'] {
   display: grid;
   gap: 1rem;
   max-width: 38rem;
+  margin-top: var(--space-block);
 }
 
 /* Опыт до адвокатуры и образование — одной строкой, мелко, под двойной линейкой */
@@ -2465,18 +2500,10 @@ a[href^='tel:'] {
     align-items: start;
   }
 
-  .about__head,
+  .about__photo,
   .pricing__lead {
     position: sticky;
     top: calc(var(--header-h) + 1.5rem);
-  }
-
-  .about__body {
-    padding-top: calc(var(--rule) + 1.25rem);
-  }
-
-  .about__text {
-    margin-top: 0;
   }
 
   .contacts {

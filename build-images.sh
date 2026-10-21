@@ -2,18 +2,20 @@
 # ==========================================================================
 #  build-images.sh — портрет, og-cover и favicon.ico
 #  --------------------------------------------------------------------------
-#  1. Портрет: assets/img/src/dmitriev.jpg (подойдут и .jpeg, .png, .webp) →
-#       assets/img/dmitriev-480|800|1200.avif
-#       assets/img/dmitriev-480|800|1200.webp
-#       assets/img/dmitriev-800.jpg               (для браузеров без AVIF/WebP)
+#  1. Два снимка (исходники в assets/img/src/, подойдут .jpg .jpeg .png .webp):
+#     hero.jpg  — первый экран (фото в полный рост) →
+#                 assets/img/hero-480|800|1200.avif|webp, hero-800.jpg
+#                 Пока его нет, первый экран собирается из about.jpg.
+#     about.jpg — портрет в «Об адвокате» →
+#                 assets/img/about-480|800.avif|webp, about-800.jpg
 #     Кадр — 4 : 5, обрезка по «интересной» области (лицо), а не по центру.
-#     ПОКА ИСХОДНИКА НЕТ — те же файлы рисуются как аккуратная заглушка:
+#     Если нет и исходника — те же файлы рисуются как аккуратная заглушка:
 #     монограмма «ДА» в двойной рамке на ПРОЗРАЧНОМ фоне (AVIF/WebP) —
 #     фон даёт CSS (--p-plate), поэтому заглушка подходит к любой палитре.
 #     Заменить фото = положить файл в assets/img/src/ и запустить скрипт;
 #     index.html трогать не нужно — пути у фото и заглушки одинаковые.
 #  2. assets/img/og-cover.jpg (1200 × 630) — превью ссылки в мессенджерах:
-#     имя, направления, телефон и портрет (или заглушка). Текст переводится
+#     имя, направления, телефон и портрет из about.jpg (или заглушка). Текст переводится
 #     в контуры прямо из woff2 Geologica — браузер и системные шрифты не нужны.
 #  3. assets/img/favicon.svg и favicon.ico (16, 32, 48 px).
 #
@@ -88,13 +90,24 @@ const log = (file, w, h) => console.log(`  ${path.basename(file).padEnd(20)} ${S
 
 /* ----- Портрет ----- */
 
-function findSource() {
-  for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
-    const file = path.join(SRC, `dmitriev.${ext}`);
-    if (fs.existsSync(file)) return file;
+// Первый найденный исходник из списка имён: ['hero', 'about'] — снимок для
+// первого экрана, а пока его нет — портрет
+function findSource(names) {
+  for (const name of names) {
+    for (const ext of ['jpg', 'jpeg', 'png', 'webp']) {
+      const file = path.join(SRC, `${name}.${ext}`);
+      if (fs.existsSync(file)) return file;
+    }
   }
   return null;
 }
+
+// Наборы файлов. Пропорция ratio = высота / ширина; у первого экрана её
+// уточним под фото в полный рост, когда оно будет (сейчас там портрет 4 : 5).
+const SETS = {
+  hero: { sources: ['hero', 'about'], widths: [480, 800, 1200], ratio: 1.25 },
+  about: { sources: ['about'], widths: [480, 800], ratio: 1.25 }
+};
 
 // Заглушка 4 : 5: монограмма в тонкой двойной рамке на прозрачном фоне —
 // фон и цвет подложки даёт CSS, поэтому заглушка подходит к любой палитре.
@@ -116,38 +129,39 @@ function placeholderSvg(w, h) {
 </svg>`;
 }
 
-async function portrait() {
-  const file = findSource();
-  const widths = [480, 800, 1200];
+async function buildSet(name) {
+  const { sources, widths, ratio } = SETS[name];
+  const file = findSource(sources);
+  const height = (w) => Math.round(w * ratio);
   let make;
 
   if (file) {
-    console.log(`→ портрет: ${file}`);
+    console.log(`→ ${name}: ${file}`);
     const meta = await sharp(file).rotate().metadata();
-    if (Math.min(meta.width / 1200, meta.height / 1500) < 1) {
-      console.log(`  ! исходник мал (${meta.width} x ${meta.height}): для резкости нужен от 1200 x 1500`);
+    const need = widths[widths.length - 1];
+    if (Math.min(meta.width / need, meta.height / height(need)) < 1) {
+      console.log(`  ! исходник мал (${meta.width} x ${meta.height}): для резкости нужен от ${need} x ${height(need)}`);
     }
     // attention — кадр по самой «интересной» области (лицо), а не по центру
-    make = (w) => sharp(file).rotate().resize(w, Math.round(w * 1.25), { fit: 'cover', position: 'attention' });
+    make = (w) => sharp(file).rotate().resize(w, height(w), { fit: 'cover', position: 'attention' });
   } else {
-    console.log('→ портрет: исходника нет — заглушка с монограммой (прозрачный фон)');
-    make = (w) => sharp(Buffer.from(placeholderSvg(w, Math.round(w * 1.25))));
+    console.log(`→ ${name}: исходника нет — заглушка с монограммой (прозрачный фон)`);
+    make = (w) => sharp(Buffer.from(placeholderSvg(w, height(w))));
   }
 
   for (const w of widths) {
-    const h = Math.round(w * 1.25);
-    const avif = path.join(IMG, `dmitriev-${w}.avif`);
+    const avif = path.join(IMG, `${name}-${w}.avif`);
     await make(w).avif({ quality: 55, effort: 6 }).toFile(avif);
-    log(avif, w, h);
-    const webp = path.join(IMG, `dmitriev-${w}.webp`);
+    log(avif, w, height(w));
+    const webp = path.join(IMG, `${name}-${w}.webp`);
     await make(w).webp({ quality: 80, effort: 6 }).toFile(webp);
-    log(webp, w, h);
+    log(webp, w, height(w));
   }
-  const jpg = path.join(IMG, 'dmitriev-800.jpg');
-  // mozjpeg + прогрессивная развёртка: меньше вес, снимок проявляется целиком сразу
+  const jpg = path.join(IMG, `${name}-800.jpg`);
+  // mozjpeg + прогрессивная развёртка: меньше вес, снимок проявляется целиком сразу;
   // у JPG прозрачности нет — фон заглушки цвета подложки выбранной палитры
   await make(800).flatten({ background: C.plate }).jpeg({ quality: 82, mozjpeg: true, progressive: true }).toFile(jpg);
-  log(jpg, 800, 1000);
+  log(jpg, 800, height(800));
 
   return make;
 }
@@ -265,7 +279,8 @@ async function favicon() {
 }
 
 (async () => {
-  const makePortrait = await portrait();
+  await buildSet('hero');
+  const makePortrait = await buildSet('about');
   const fonts = await loadFonts();
   await ogCover(fonts, makePortrait);
   await favicon();

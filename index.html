@@ -45,13 +45,13 @@
        элемент (LCP). imagesrcset и imagesizes совпадают с <source> портрета —
        иначе браузер выберет по ним другой файл и скачает оба. -->
   <link rel="preload" as="image" type="image/avif" fetchpriority="high"
-        imagesrcset="assets/img/dmitriev-480.avif 480w, assets/img/dmitriev-800.avif 800w, assets/img/dmitriev-1200.avif 1200w"
+        imagesrcset="assets/img/hero-480.avif 480w, assets/img/hero-800.avif 800w, assets/img/hero-1200.avif 1200w"
         imagesizes="(min-width: 48em) min(30rem, 38vw), 17rem">
 
   <!-- Подключаются только минифицированные файлы (их собирает build.sh).
        ?v= — хеш содержимого файла, его тоже ставит build.sh: статика кэшируется
        на год (immutable), и новый хеш сразу обходит кэш. -->
-  <link rel="stylesheet" href="css/style.min.css?v=b35f737a33">
+  <link rel="stylesheet" href="css/style.min.css?v=438d253286">
 
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -253,19 +253,18 @@
     <section class="hero theme-hero" id="top" aria-labelledby="hero-title">
       <div class="hero__inner container">
         <!-- Пути к фото — окончательные: build-images.sh собирает эти файлы из
-             assets/img/src/dmitriev.jpg, а пока исходника нет — из заглушки
-             с монограммой. Замена фото = положить файл и запустить скрипт,
-             разметку трогать не нужно. Кадр 4 : 5 показывается целиком.
-             Не lazy и fetchpriority="high": портрет в первом экране. -->
+             assets/img/src/hero.jpg (фото в полный рост), а пока его нет —
+             из портрета about.jpg. Кадр показывается целиком.
+             Не lazy и fetchpriority="high": снимок в первом экране. -->
         <figure class="hero__portrait">
           <picture>
             <source type="image/avif"
-                    srcset="assets/img/dmitriev-480.avif 480w, assets/img/dmitriev-800.avif 800w, assets/img/dmitriev-1200.avif 1200w"
+                    srcset="assets/img/hero-480.avif 480w, assets/img/hero-800.avif 800w, assets/img/hero-1200.avif 1200w"
                     sizes="(min-width: 48em) min(30rem, 38vw), 17rem">
             <source type="image/webp"
-                    srcset="assets/img/dmitriev-480.webp 480w, assets/img/dmitriev-800.webp 800w, assets/img/dmitriev-1200.webp 1200w"
+                    srcset="assets/img/hero-480.webp 480w, assets/img/hero-800.webp 800w, assets/img/hero-1200.webp 1200w"
                     sizes="(min-width: 48em) min(30rem, 38vw), 17rem">
-            <img class="hero__photo" src="assets/img/dmitriev-800.jpg" width="800" height="1000"
+            <img class="hero__photo" src="assets/img/hero-800.jpg" width="800" height="1000"
                  alt="Дмитриев Александр Николаевич, адвокат" fetchpriority="high">
           </picture>
         </figure>
@@ -665,9 +664,24 @@
     <!-- ===== 9. ОБ АДВОКАТЕ ===== -->
     <section class="section theme-paper" id="about" aria-labelledby="about-title">
       <div class="container about">
-        <!-- Портрет — в первом экране; второй раз тот же снимок не ставим.
-             Слева заголовок и цитата, справа текст. -->
-        <div class="about__head">
+        <!-- Портрет (assets/img/src/about.jpg → build-images.sh). В первом экране —
+             фото в полный рост, здесь — портрет по пояс. На десктопе колонка
+             со снимком липкая; loading="lazy": раздел далеко от первого экрана.
+             Ширина не больше 20 rem: исходник небольшой, крупнее он стал бы мягким. -->
+        <figure class="about__photo">
+          <picture>
+            <source type="image/avif"
+                    srcset="assets/img/about-480.avif 480w, assets/img/about-800.avif 800w"
+                    sizes="(min-width: 30em) 20rem, calc(100vw - 2.5rem)">
+            <source type="image/webp"
+                    srcset="assets/img/about-480.webp 480w, assets/img/about-800.webp 800w"
+                    sizes="(min-width: 30em) 20rem, calc(100vw - 2.5rem)">
+            <img class="about__img" src="assets/img/about-800.jpg" width="800" height="1000"
+                 alt="Дмитриев Александр Николаевич, адвокат" loading="lazy" decoding="async">
+          </picture>
+        </figure>
+
+        <div class="about__body">
           <h2 class="section__title" id="about-title">Об&nbsp;адвокате</h2>
 
           <!-- Цитата из профиля на HARANT, слово в слово. Кавычки — висячие:
@@ -676,9 +690,7 @@
           <blockquote class="about__quote">
             <p>Убеждён, что сила&nbsp;— в&nbsp;правде, за&nbsp;которую стоит бороться.</p>
           </blockquote>
-        </div>
 
-        <div class="about__body">
           <div class="about__text">
             <p>Я&nbsp;адвокат Адвокатской палаты города <span class="nowrap">Санкт-Петербурга</span>, стаж&nbsp;— более 22&nbsp;лет. Специализируюсь на&nbsp;гражданском и&nbsp;семейном праве, веду арбитражные споры. Представлял интересы клиентов в&nbsp;арбитражных судах и&nbsp;судах общей юрисдикции.</p>
             <p>Работаю в&nbsp;<span class="nowrap">Санкт-Петербурге</span> и&nbsp;Великом Новгороде, в&nbsp;каждом городе есть офис. Встречаюсь с&nbsp;клиентами по&nbsp;записи, при необходимости выезжаю сам или консультирую онлайн. Работаю по&nbsp;договору.</p>
