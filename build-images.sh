@@ -20,11 +20,10 @@
 #     в контуры прямо из woff2 Geologica — браузер и системные шрифты не нужны.
 #  3. assets/img/favicon.svg и favicon.ico (16, 32, 48 px).
 #
-#  Цвета og-cover, favicon и фона JPG — из палитры сайта (как класс
-#  palette-… на <html> в index.html): переменная PALETTE, a/b/c/d, по умолчанию d.
+#  Цвета og-cover, favicon и фона JPG — палитры сайта «Зимний дворец»
+#  (те же, что --p-plate и --d-* в css/style.css).
 #
 #  Запуск:   bash build-images.sh
-#            PALETTE=a bash build-images.sh
 #  Нужен Node.js 18+. sharp, fontkit и wawoff2 ставятся во временную папку
 #  при каждом запуске (npm берёт их из кэша) — в проекте нет package.json
 #  и node_modules, как и у build.sh.
@@ -43,12 +42,6 @@ if ! command -v npm >/dev/null 2>&1; then
   echo "Ошибка: не найден npm. Установите Node.js 18+ (https://nodejs.org)." >&2
   exit 1
 fi
-
-PALETTE="${PALETTE:-d}"
-case "$PALETTE" in
-  a|b|c|d) ;;
-  *) echo "Ошибка: PALETTE=$PALETTE — нужна a, b, c или d." >&2; exit 1 ;;
-esac
 
 # Временная папка под зависимости и сам скрипт; удаляется при любом выходе.
 TMP="$(mktemp -d)"
@@ -70,15 +63,8 @@ const IMG = 'assets/img';
 const SRC = path.join(IMG, 'src');
 const FONTS = 'assets/fonts';
 
-// Цвета тёмной схемы палитр — те же, что --p-plate и --d-* в css/style.css
-const PALETTES = {
-  d: { plate: '#10231F', fg: '#EEE7DA', strong: '#D3CCBF', muted: '#A9B2AB', accent: '#BE8E5C', accentText: '#C99D6E' },
-  a: { plate: '#17345F', fg: '#F4EFE6', strong: '#E2DCD0', muted: '#B9C3D6', accent: '#C9A262', accentText: '#D9B878' },
-  b: { plate: '#1D4E8F', fg: '#FFFFFF', strong: '#EEF3FA', muted: '#D3DFF0', accent: '#F2C46D', accentText: '#F7D489' },
-  c: { plate: '#22665B', fg: '#FFFFFF', strong: '#F0F6F3', muted: '#DDECE7', accent: '#E3B85F', accentText: '#F8E0A8' }
-};
-const PALETTE = process.argv[2] || 'd';
-const C = PALETTES[PALETTE];
+// Цвета тёмной схемы — те же, что --p-plate и --d-* в css/style.css
+const C = { plate: '#22665B', fg: '#FFFFFF', strong: '#F0F6F3', muted: '#DDECE7', accent: '#E3B85F', accentText: '#F8E0A8' };
 
 // Монограмма «ДА» — те же контуры Geologica 600, что в спрайте index.html (viewBox 48)
 // и, крупнее, в favicon (viewBox 64)
@@ -159,7 +145,7 @@ async function buildSet(name) {
   }
   const jpg = path.join(IMG, `${name}-800.jpg`);
   // mozjpeg + прогрессивная развёртка: меньше вес, снимок проявляется целиком сразу;
-  // у JPG прозрачности нет — фон заглушки цвета подложки выбранной палитры
+  // у JPG прозрачности нет — фон заглушки цвета подложки (--p-plate)
   await make(800).flatten({ background: C.plate }).jpeg({ quality: 82, mozjpeg: true, progressive: true }).toFile(jpg);
   log(jpg, 800, height(800));
 
@@ -287,8 +273,7 @@ async function favicon() {
 })().catch((err) => { console.error('Ошибка:', err.message); process.exit(1); });
 NODE
 
-echo "→ палитра: $PALETTE"
-node "$TMP/build-images.cjs" "$PALETTE"
+node "$TMP/build-images.cjs"
 
 echo
 echo "Готово. index.html менять не нужно: пути к фото и превью прежние."

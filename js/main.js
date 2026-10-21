@@ -23,8 +23,10 @@
   const SITE = Object.freeze({
     phone: '+79217300305',
     phoneText: '+7 (921) 730-03-05',
-    whatsapp: 'https://wa.me/79524825555',
-    whatsappText: '+7 (952) 482-55-55',
+    // MAX (мессенджер VK): ссылка на профиль адвоката — ЕДИНСТВЕННОЕ место,
+    // куда её вставить, вместо MAX_URL_TODO (например 'https://max.ru/…').
+    // Пока здесь не адрес https://…, кнопки и строка MAX на сайте скрыты.
+    max: 'MAX_URL_TODO',
     // Telegram открывается по номеру основного телефона
     telegram: 'https://t.me/+79217300305',
     telegramText: '+7 (921) 730-03-05',
@@ -65,11 +67,11 @@
   /* ----- Контакты из SITE ----- */
 
   function initContacts() {
+    const hasMax = /^https:\/\/\S+$/.test(SITE.max);
     const apply = {
       'phone-link': function (el) { el.href = 'tel:' + SITE.phone; },
       'phone-text': function (el) { el.textContent = SITE.phoneText; },
-      'whatsapp-link': function (el) { el.href = SITE.whatsapp; },
-      'whatsapp-text': function (el) { el.textContent = SITE.whatsappText; },
+      'max-link': function (el) { if (hasMax) el.href = SITE.max; },
       'telegram-link': function (el) { el.href = SITE.telegram; },
       'telegram-text': function (el) { el.textContent = SITE.telegramText; },
       'email-link': function (el) { el.href = 'mailto:' + SITE.email; },
@@ -80,6 +82,13 @@
       const setter = apply[el.dataset.site];
       if (setter) setter(el);
     });
+
+    // Кнопки и строка MAX размечены с hidden: показываем, только когда есть ссылка
+    if (hasMax) {
+      document.querySelectorAll('[data-max]').forEach(function (el) {
+        el.hidden = false;
+      });
+    }
   }
 
 
@@ -375,20 +384,6 @@
   }
 
 
-  /* ----- Цвет панели браузера по палитре ----- */
-
-  /* Палитра выбирается классом на <html> (или ?palette=… для показа клиенту),
-     а theme-color в <head> записан для D. Берём цвет шапки (--p-deep) из CSS,
-     чтобы панель браузера на телефоне совпадала с шапкой при любом варианте.
-     getComputedStyle здесь — только пересчёт стилей, без раскладки страницы. */
-  function initThemeColor() {
-    const meta = document.querySelector('meta[name="theme-color"]');
-    if (!meta) return;
-    const color = getComputedStyle(root).getPropertyValue('--p-deep').trim();
-    if (color) meta.setAttribute('content', color);
-  }
-
-
   /* ----- Мобильная панель: прячется при клавиатуре и на первом экране ----- */
 
   function initMobileBar() {
@@ -463,7 +458,6 @@
     initSmoothScroll(header);
     initMap();
     initMobileBar();
-    initThemeColor();
 
     // Всё инициализировано — отключаем CSS-страховку (failsafe-show) для скрытых блоков
     root.classList.add('is-ready');

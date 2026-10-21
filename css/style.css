@@ -81,130 +81,21 @@
    1. Переменные
    ========================================================================== */
 
-/* ----- Палитры -----
-   Четыре варианта цвета; включается классом на <html>: palette-a … palette-d
-   (без класса — D). Варианты различаются не только цветами, но и тем, какие
-   секции тёмные: у A светлый первый экран, у B светлые «Практика» и «Контакты».
-   Поэтому палитра задаёт фоны (--p-*) и два набора цветов текста — для тёмной
-   схемы (--d-*) и для светлой (--l-*), а темы секций (ниже) решают, какую
-   схему взять. -rgb — те же цвета тройкой для полупрозрачных линий.
+/* ----- Палитра «Зимний дворец» -----
+   Малахитовая зелень, тёплый белый, золото. Фоны — --p-*, цвета текста
+   тёмной схемы (на зелёном) — --d-*, светлой (на белом) — --l-*; темы
+   секций ниже решают, какую схему взять. -rgb — те же цвета тройкой для
+   полупрозрачных линий. Класс palette-c на <html> только помечает палитру:
+   цвета заданы на :root.
    Контраст по WCAG 2.2 (AA ≥ 4.5 : 1, графика ≥ 3 : 1) проверен для каждой
-   пары «текст — фон», в том числе на карточках (белый 6 % поверх тёмного):
-     D: текст на тёмном ≥ 5.3, на светлом ≥ 5.2, кнопки 5.6 / 15.1
-     A: ≥ 5.2 / ≥ 5.3, кнопки 6.5 / 12.4
-     B: ≥ 4.9 / ≥ 5.7, кнопки 9.0 / 8.3
-     C: ≥ 4.5 / ≥ 6.0, кнопки 6.7 / 6.7 */
-
-/* D — исходная: зелёный, гранит набережной, бронза */
-:root,
-.palette-d {
-  --p-hero: #10231F;          /* первый экран */
-  --p-band: #10231F;          /* «Практика», «Контакты» */
-  --p-deep: #0A1714;          /* шапка, цоколь, подвал, мобильная панель */
-  --p-deep-rgb: 10 23 20;
-  --p-plate: #10231F;         /* тёмные таблички: консультация, подложка фото */
-  --p-light: #ECE6E0;
-  --p-paper: #E2DAD2;
-
-  --d-fg: #EEE7DA;
-  --d-fg-rgb: 238 231 218;
-  --d-strong: #D3CCBF;
-  --d-muted: #A9B2AB;
-  --d-label: #97A39C;
-  --d-accent: #BE8E5C;
-  --d-accent-rgb: 190 142 92;
-  --d-accent-hover: #D3A877;
-  --d-accent-text: #C99D6E;
-  --d-cta-fg: #10231F;
-
-  --l-fg: #15201D;
-  --l-fg-rgb: 21 32 29;
-  --l-muted: #4E5A56;
-  --l-card: #F8F5F1;
-  --l-accent: #7A4E26;
-  --l-accent-rgb: 122 78 38;
-  --l-cta-bg: #10231F;
-  --l-cta-fg: #F8F5F1;
-  --l-cta-hover: #17302A;
-}
-
-/* A — светлая: тёплый белый и песок, глубокий синий, латунь. Первый экран
-   светлый; синие — «Практика», «Контакты», шапка, цоколь и подвал. */
-.palette-a {
-  --p-hero: #F6F1E7;
-  --p-band: #17345F;
-  --p-deep: #102445;
-  --p-deep-rgb: 16 36 69;
-  --p-plate: #17345F;
-  --p-light: #FBF8F2;
-  --p-paper: #F2EBDF;
-
-  --d-fg: #F4EFE6;
-  --d-fg-rgb: 244 239 230;
-  --d-strong: #E2DCD0;
-  --d-muted: #B9C3D6;
-  --d-label: #AEB8CC;
-  --d-accent: #C9A262;
-  --d-accent-rgb: 201 162 98;
-  --d-accent-hover: #DABA80;
-  --d-accent-text: #D9B878;
-  --d-cta-fg: #102445;
-
-  --l-fg: #16233B;
-  --l-fg-rgb: 22 35 59;
-  --l-muted: #4F586A;
-  --l-card: #FFFFFF;
-  --l-accent: #7D5A1E;
-  --l-accent-rgb: 125 90 30;
-  --l-cta-bg: #17345F;
-  --l-cta-fg: #FFFFFF;
-  --l-cta-hover: #20457A;
-
-  color-scheme: light;
-}
-
-/* B — насыщенный синий первый экран, остальные секции светлые; акцент — золото */
-.palette-b {
-  --p-hero: #1D4E8F;
-  --p-band: #DCE6F2;
-  --p-deep: #133766;
-  --p-deep-rgb: 19 55 102;
-  --p-plate: #1D4E8F;
-  --p-light: #F5F7FA;
-  --p-paper: #E8EEF6;
-
-  --d-fg: #FFFFFF;
-  --d-fg-rgb: 255 255 255;
-  --d-strong: #EEF3FA;
-  --d-muted: #D3DFF0;
-  --d-label: #C9D7EC;
-  --d-accent: #F2C46D;
-  --d-accent-rgb: 242 196 109;
-  --d-accent-hover: #F7D58F;
-  --d-accent-text: #F7D489;
-  --d-cta-fg: #10284D;
-
-  --l-fg: #14213A;
-  --l-fg-rgb: 20 33 58;
-  --l-muted: #4D586C;
-  --l-card: #FFFFFF;
-  --l-accent: #1D4E8F;
-  --l-accent-rgb: 29 78 143;
-  --l-cta-bg: #1D4E8F;
-  --l-cta-fg: #FFFFFF;
-  --l-cta-hover: #163F75;
-
-  color-scheme: light;
-}
-
-/* C — «Зимний дворец»: малахитовая зелень, тёплый белый, золото. Тот же
-   зелёный род, что у D, — узнаваемо, но светлее и живее. */
-.palette-c {
-  --p-hero: #22665B;
-  --p-band: #22665B;
-  --p-deep: #174C43;
+   пары «текст — фон», в том числе на карточках (белый 6 % поверх зелёного):
+   текст на тёмном ≥ 4.5, на светлом ≥ 6.0, кнопки 6.7 / 6.7. */
+:root {
+  --p-hero: #22665B;          /* первый экран */
+  --p-band: #22665B;          /* «Практика», «Контакты» */
+  --p-deep: #174C43;          /* шапка, цоколь, подвал, мобильная панель */
   --p-deep-rgb: 23 76 67;
-  --p-plate: #22665B;
+  --p-plate: #22665B;         /* тёмные таблички: консультация, подложка фото */
   --p-light: #FBFAF6;
   --p-paper: #ECF3EF;
 
@@ -229,6 +120,7 @@
   --l-cta-fg: #FFFFFF;
   --l-cta-hover: #1C5249;
 
+  /* Большая часть страницы светлая — светлые полосы прокрутки и контролы */
   color-scheme: light;
 }
 
@@ -258,12 +150,10 @@
   --focus: var(--d-fg);
 }
 
-/* Светлая схема — у светлых тем, у первого экрана в A и у «полос» в B */
+/* Светлая схема — у светлых тем */
 .scheme-light,
 .theme-light,
-.theme-paper,
-.palette-a .theme-hero,
-.palette-b .theme-band {
+.theme-paper {
   --fg: var(--l-fg);
   --strong: var(--l-fg);
   --muted: var(--l-muted);
@@ -370,7 +260,6 @@ address {
    ========================================================================== */
 
 html {
-  color-scheme: dark;
   scroll-padding-top: var(--header-h);
 }
 
@@ -529,9 +418,7 @@ a[href^='tel:'] {
    намёк на камень набережной вместо пластиковой заливки. SVG-шум
    в data-URI: ни одного запроса, тайл рисуется один раз. */
 .theme-light::after,
-.theme-paper::after,
-.palette-a .theme-hero::after,
-.palette-b .theme-band::after {
+.theme-paper::after {
   content: '';
   position: absolute;
   inset: 0;
@@ -716,12 +603,6 @@ a[href^='tel:'] {
 .js .header--solid {
   background-color: rgb(var(--p-deep-rgb) / 0.97);
   border-bottom-color: rgb(var(--d-accent-rgb) / 0.22);
-}
-
-/* A: под шапкой светлый первый экран — полупрозрачная синяя шапка над ним
-   выглядела бы серой, поэтому она сплошная */
-.palette-a.js .header {
-  background-color: var(--p-deep);
 }
 
 .header--hidden {
@@ -933,13 +814,18 @@ a[href^='tel:'] {
 }
 
 .menu__actions {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.menu__mail {
-  grid-column: 1 / -1;
+/* Почта — на всю строку, мессенджеры под ней делят строку поровну */
+.menu__actions .btn {
+  flex: 1 1 0;
+}
+
+.menu__actions .menu__mail {
+  flex-basis: 100%;
 }
 
 .nav__list {
@@ -1121,11 +1007,18 @@ a[href^='tel:'] {
   margin-top: 0.75rem;
 }
 
-.hero__messengers {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+/* Мессенджеры флексом: кнопки делят строку поровну, а когда видна одна
+   (MAX без ссылки скрыт) — она на всю ширину */
+.hero__messengers,
+.contacts__messengers {
+  display: flex;
   gap: 0.75rem;
   flex: 1 1 100%;
+}
+
+.hero__messengers .btn,
+.contacts__messengers .btn {
+  flex: 1 1 0;
 }
 
 .hero__note {
@@ -1909,12 +1802,6 @@ a[href^='tel:'] {
   margin-top: 1.75rem;
 }
 
-.contacts__messengers {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
-}
-
 .contacts__caption {
   margin-top: 0.875rem;
   color: var(--muted);
@@ -2217,7 +2104,11 @@ a[href^='tel:'] {
   }
 
   .hero__messengers {
-    display: flex;
+    flex: none;
+  }
+
+  .hero__messengers .btn,
+  .contacts__messengers .btn {
     flex: none;
   }
 
@@ -2240,7 +2131,6 @@ a[href^='tel:'] {
   }
 
   .contacts__messengers {
-    display: flex;
     flex-wrap: wrap;
   }
 }
