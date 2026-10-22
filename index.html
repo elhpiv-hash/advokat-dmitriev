@@ -39,16 +39,16 @@
 
   <!-- Preload фото первого экрана: это самый крупный элемент (LCP).
        imagesrcset и imagesizes совпадают с <source> фото — иначе браузер
-       выберет по ним другой файл и скачает оба. Ширина на десктопе — 2/3
-       высоты первого экрана без шапки и цоколя (9.5rem), на телефоне — до 26 rem. -->
+       выберет по ним другой файл и скачает оба. Ширина на десктопе — 2/3 от
+       1.25 высоты первого экрана без шапки и цоколя (9.5rem), на телефоне — до 26 rem. -->
   <link rel="preload" as="image" type="image/avif" fetchpriority="high"
         imagesrcset="assets/img/hero-480.avif 480w, assets/img/hero-852.avif 852w"
-        imagesizes="(min-width: 64em) calc((100vh - 9.5rem) * 0.667), min(100vw, 26rem)">
+        imagesizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.833), min(100vw, 26rem)">
 
   <!-- Подключаются только минифицированные файлы (их собирает build.sh).
        ?v= — хеш содержимого файла, его тоже ставит build.sh: статика кэшируется
        на год (immutable), и новый хеш сразу обходит кэш. -->
-  <link rel="stylesheet" href="css/style.min.css?v=e145ee9fe6">
+  <link rel="stylesheet" href="css/style.min.css?v=feca3092bd">
 
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -275,10 +275,10 @@
           <picture>
             <source type="image/avif"
                     srcset="assets/img/hero-480.avif 480w, assets/img/hero-852.avif 852w"
-                    sizes="(min-width: 64em) calc((100vh - 9.5rem) * 0.667), min(100vw, 26rem)">
+                    sizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.833), min(100vw, 26rem)">
             <source type="image/webp"
                     srcset="assets/img/hero-480.webp 480w, assets/img/hero-852.webp 852w"
-                    sizes="(min-width: 64em) calc((100vh - 9.5rem) * 0.667), min(100vw, 26rem)">
+                    sizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.833), min(100vw, 26rem)">
             <img class="hero__photo" src="assets/img/hero-640.png" width="852" height="1278"
                  alt="Дмитриев Александр Николаевич, адвокат" fetchpriority="high">
           </picture>

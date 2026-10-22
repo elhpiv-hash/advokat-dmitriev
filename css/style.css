@@ -2499,64 +2499,6 @@ a.footer__studio {
     transform: none;
   }
 
-  /* Первый экран вместе с цоколем занимает ровно экран: текст — по центру
-     высоты в левой колонке (7 из 12), цоколь — нижний край. 4.75rem — высота
-     цоколя. Правая колонка пустая: в ней стоит фигура (абсолютно, ниже). */
-  .hero__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    align-items: center;
-    column-gap: clamp(2rem, 5vw, 6rem);
-    min-height: calc(100vh - 4.75rem);
-    min-height: calc(100svh - 4.75rem);
-    padding-bottom: 3rem;
-  }
-
-  .js .hero__inner {
-    padding-top: calc(var(--header-h) + 3rem);
-  }
-
-  .hero__content {
-    grid-column: 1;
-    grid-row: 1;
-  }
-
-  /* Фигура — от низа шапки до низа первого экрана (верх цоколя), прижата
-     к правому краю колонки текста сайта. Ширина — из пропорции 2 : 3, но не
-     больше 46 % ширины: на высоких экранах (iPad Pro, 1920 × 1080) она не
-     заходит на текст; тогда снимок вписывается по ширине и стоит на нижнем
-     крае (object-fit: contain, низ). */
-  .hero__figure {
-    position: absolute;
-    top: 0;
-    right: var(--gutter);
-    bottom: 0;
-    width: auto;
-    max-width: 46%;
-    height: auto;
-    aspect-ratio: 2 / 3;
-    margin: 0;
-  }
-
-  .js .hero__figure {
-    top: var(--header-h);
-  }
-
-  .hero__figure::before {
-    inset: 6% -14% 4%;
-    background: radial-gradient(closest-side at 50% 40%, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.04) 64%, transparent);
-  }
-
-  .hero__figure picture {
-    width: 100%;
-    -webkit-mask-image: none;
-    mask-image: none;
-  }
-
-  .hero__photo {
-    object-fit: contain;
-    object-position: 50% 100%;
-  }
 
   .hero__messengers {
     flex: none;
@@ -2665,6 +2607,77 @@ a.footer__studio {
 
   .footer__legal {
     grid-column: 1 / -1;
+  }
+}
+
+/* Первый экран «фото справа» — на широких и не слишком высоких экранах:
+   при пропорции окна уже 5 : 4 (планшет вертикально, iPad Pro 1024 × 1366)
+   крупная фигура не поместилась бы рядом с текстом — там остаётся раскладка
+   планшета, фото сверху. */
+@media (min-width: 64em) and (min-aspect-ratio: 5/4) {
+  /* Первый экран вместе с цоколем занимает ровно экран: текст — по центру
+     высоты в левой половине, фигура — по центру правой, цоколь — нижний край.
+     4.75rem — высота цоколя. padding-top 3rem есть и без JS (шапка тогда не
+     фиксированная): от него фигура отсчитывает свой верх. */
+  .hero__inner {
+    --hero-gap: clamp(2rem, 5vw, 6rem);
+
+    display: grid;
+    grid-template-columns: minmax(0, 6fr) minmax(0, 6fr);
+    align-items: center;
+    column-gap: var(--hero-gap);
+    min-height: calc(100vh - 4.75rem);
+    min-height: calc(100svh - 4.75rem);
+    padding-block: 3rem;
+  }
+
+  .js .hero__inner {
+    padding-top: calc(var(--header-h) + 3rem);
+  }
+
+  .hero__content {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* Правая половина — «слот» во всю высоту строки сетки; сама фигура в нём
+     абсолютная и на раскладку не влияет. Высота снимка — 1.25 видимой высоты
+     первого экрана (от низа шапки до цоколя = высота слота + два поля по
+     3 rem): человек крупнее, а низ уходит под цоколь по поясу — висящая кисть
+     скрывается целиком, а не режется по пальцам. Ширина — из пропорции 2 : 3;
+     предел ширины — чтобы человек (81 % ширины кадра) заходил в зазор между
+     колонками не дальше чем на 1 rem: (½ слота + зазор − 1 rem) / 0.405. */
+  .hero__figure {
+    position: relative;
+    grid-column: 2;
+    grid-row: 1;
+    align-self: stretch;
+    height: auto;
+    margin: 0;
+  }
+
+  .hero__figure::before {
+    inset: -3rem -12% -3rem;
+    background: radial-gradient(closest-side at 50% 38%, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.04) 64%, transparent);
+  }
+
+  .hero__figure picture {
+    position: absolute;
+    top: -3rem;
+    left: 50%;
+    width: auto;
+    max-width: calc((50% + var(--hero-gap) - 1rem) * 2.47);
+    height: calc((100% + 6rem) * 1.25);
+    aspect-ratio: 2 / 3;
+    margin: 0;
+    transform: translateX(-50%);
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .hero__photo {
+    object-fit: contain;
+    object-position: 50% 0;
   }
 }
 
