@@ -97,6 +97,18 @@ CSP в `.htaccess` уже разрешает Метрику (`mc.yandex.ru`, `ya
 Если панель — cPanel, папка сайта называется `public_html/`, SSL — «SSL/TLS Status»
 → «Run AutoSSL».
 
+## Демо на GitHub Pages
+
+Для показа клиенту: https://elhpiv-hash.github.io/advokat-dmitriev/ — копия сайта
+с noindex (в поиск не попадает). Обновить демо после правок:
+
+```bash
+bash tools/publish-pages.sh
+```
+
+Скрипт собирает сайт и кладёт копию `dist/` в ветку `gh-pages` (она целиком
+генерируется скриптом). Боевая сборка в `dist/` от этого не меняется.
+
 ## После публикации — чек-лист
 
 - [ ] Создать счётчик в Яндекс.Метрике, вписать номер в `METRIKA_ID` (`js/main.js`),
