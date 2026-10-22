@@ -3,8 +3,10 @@
 #  build-images.sh — фото, og-cover, favicon и apple-touch-icon
 #  --------------------------------------------------------------------------
 #  1. Два снимка (исходники в assets/img/src/, подойдут .jpg .jpeg .png .webp):
-#     hero.jpg  — первый экран, фото в полный рост, кадр 2 : 3 →
-#                 assets/img/hero-480|852.avif|webp, hero-800.jpg
+#     hero-cutout.png — первый экран: фото в полный рост БЕЗ ФОНА (прозрачный
+#                 PNG; делается из hero.jpg скриптом tools/cutout.py) →
+#                 assets/img/hero-480|852.avif|webp с прозрачностью и
+#                 hero-640.png (запасной; JPG нет — у него нет прозрачности)
 #                 Пока его нет, в первом экране — заглушка (портрет из about.jpg
 #                 туда не ставим: он уже есть в «Об адвокате»).
 #     about.jpg — портрет за столом в «Об адвокате», кадр 10 : 13 →
@@ -94,8 +96,9 @@ function findSource(names) {
 
 // Наборы файлов. ratio = высота / ширина — как у исходников; те же пропорции
 // заданы в CSS (aspect-ratio) и в width/height у <img> в index.html.
+// alpha — набор с прозрачностью: запасной формат PNG, а не JPG.
 const SETS = {
-  hero: { sources: ['hero'], widths: [480, 852], ratio: 1.5 },
+  hero: { sources: ['hero-cutout'], widths: [480, 852], ratio: 1.5, alpha: true },
   about: { sources: ['about'], widths: [480, 800, 978], ratio: 1.3 }
 };
 
@@ -120,7 +123,7 @@ function placeholderSvg(w, h) {
 }
 
 async function buildSet(name) {
-  const { sources, widths, ratio } = SETS[name];
+  const { sources, widths, ratio, alpha } = SETS[name];
   const file = findSource(sources);
   const height = (w) => Math.round(w * ratio);
   let make;
@@ -132,8 +135,10 @@ async function buildSet(name) {
     if (Math.min(meta.width / need, meta.height / height(need)) < 1) {
       console.log(`  ! исходник мал (${meta.width} x ${meta.height}): для резкости нужен от ${need} x ${height(need)}`);
     }
-    // attention — кадр по самой «интересной» области (лицо), а не по центру
-    make = (w) => sharp(file).rotate().resize(w, height(w), { fit: 'cover', position: 'attention' });
+    // attention — кадр по самой «интересной» области (лицо), а не по центру;
+    // у вырезки без фона — по верху, чтобы не задеть макушку
+    const position = alpha ? 'top' : 'attention';
+    make = (w) => sharp(file).rotate().resize(w, height(w), { fit: 'cover', position });
   } else {
     console.log(`→ ${name}: исходника нет — заглушка с монограммой (прозрачный фон)`);
     make = (w) => sharp(Buffer.from(placeholderSvg(w, height(w))));
@@ -141,12 +146,23 @@ async function buildSet(name) {
 
   for (const w of widths) {
     const avif = path.join(IMG, `${name}-${w}.avif`);
-    await make(w).avif({ quality: 55, effort: 6 }).toFile(avif);
+    await make(w).avif({ quality: alpha ? 62 : 55, effort: 6 }).toFile(avif);
     log(avif, w, height(w));
     const webp = path.join(IMG, `${name}-${w}.webp`);
-    await make(w).webp({ quality: 80, effort: 6 }).toFile(webp);
+    // alphaQuality 90 — край волос и пальцев без «ступенек»
+    await make(w).webp({ quality: 82, alphaQuality: 90, effort: 6 }).toFile(webp);
     log(webp, w, height(w));
   }
+
+  if (alpha) {
+    // Запасной PNG для браузеров без AVIF/WebP: 640 px, палитра 256 цветов
+    // с прозрачностью (libimagequant) — в несколько раз легче полноцветного.
+    const png = path.join(IMG, `${name}-640.png`);
+    await make(640).png({ palette: true, quality: 90, effort: 10, compressionLevel: 9 }).toFile(png);
+    log(png, 640, height(640));
+    return make;
+  }
+
   const jpg = path.join(IMG, `${name}-800.jpg`);
   // mozjpeg + прогрессивная развёртка: меньше вес, снимок проявляется целиком сразу;
   // у JPG прозрачности нет — фон заглушки цвета подложки (--p-plate)

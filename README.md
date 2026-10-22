@@ -25,11 +25,28 @@ bash build.sh          # CSS/JS → *.min.*, домен, ?v=, CSP, sitemap, dist
 | Ссылка на студию в подвале | `STUDIO_URL` в `build.sh` (пусто — просто текст) | `bash build.sh` |
 | MAX | `max: 'MAX_URL_TODO'` в `SITE` (`js/main.js`) → `'https://max.ru/…'`; пока не `https://…`, кнопки MAX скрыты | `bash build.sh` |
 | Телефоны, почта, Telegram | объект `SITE` в `js/main.js` + запасные значения в разметке и JSON-LD | `bash build.sh` |
-| Фото | `assets/img/src/hero.jpg` (первый экран, в полный рост, 2 : 3) и `about.jpg` («Об адвокате», 10 : 13) | `bash build-images.sh`, затем `bash build.sh` |
+| Фото | первый экран — `assets/img/src/hero-cutout.png` (в полный рост, без фона, 2 : 3); «Об адвокате» — `about.jpg` (10 : 13) | `bash build-images.sh`, затем `bash build.sh` |
 
 Шапка, подвал, плашка cookie и мобильная панель повторены в трёх страницах
 (`index.html`, `privacy/index.html`, `404.html`) — при правке меняйте все три.
 У `404.html` пути от корня (`/css/…`): она открывается по любому адресу.
+
+## Фото первого экрана без фона
+
+`hero-cutout.png` вырезан из `hero.jpg` скриптом `tools/cutout.py`: маска — rembg
+(модель birefnet-portrait), затем очистка цвета краёв, чтобы по контуру волос
+и пиджака не оставался серый ореол студийного фона. Новый снимок:
+
+```bash
+pip install "rembg[cpu]"
+python tools/cutout.py        # hero.jpg → hero-cutout.png (модель ~1 ГБ скачается при первом запуске)
+bash build-images.sh          # прозрачные AVIF/WebP + запасной PNG
+bash build.sh
+```
+
+Перед публикацией — посмотреть края на зелёном: волосы, пальцы, очки. На десктопе
+фигура стоит справа на всю высоту первого экрана (от шапки до полосы «Приём / Офисы»),
+на планшете и телефоне — сверху, низ растворяется в фоне.
 
 ## Яндекс.Метрика и cookie
 

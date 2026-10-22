@@ -37,17 +37,18 @@
        предзагруженный файл не совпадёт с запросом из CSS и скачается дважды. -->
   <link rel="preload" href="assets/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
 
-  <!-- Preload портрета: он в первом экране и на десктопе — самый крупный
-       элемент (LCP). imagesrcset и imagesizes совпадают с <source> портрета —
-       иначе браузер выберет по ним другой файл и скачает оба. -->
+  <!-- Preload фото первого экрана: это самый крупный элемент (LCP).
+       imagesrcset и imagesizes совпадают с <source> фото — иначе браузер
+       выберет по ним другой файл и скачает оба. Ширина на десктопе — 2/3
+       высоты первого экрана без шапки и цоколя (9.5rem), на телефоне — до 26 rem. -->
   <link rel="preload" as="image" type="image/avif" fetchpriority="high"
         imagesrcset="assets/img/hero-480.avif 480w, assets/img/hero-852.avif 852w"
-        imagesizes="(min-width: 48em) min(28rem, 38vw), 14rem">
+        imagesizes="(min-width: 64em) calc((100vh - 9.5rem) * 0.667), min(100vw, 26rem)">
 
   <!-- Подключаются только минифицированные файлы (их собирает build.sh).
        ?v= — хеш содержимого файла, его тоже ставит build.sh: статика кэшируется
        на год (immutable), и новый хеш сразу обходит кэш. -->
-  <link rel="stylesheet" href="css/style.min.css?v=20562c91e8">
+  <link rel="stylesheet" href="css/style.min.css?v=e145ee9fe6">
 
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -260,24 +261,25 @@
   <main id="main" tabindex="-1">
 
     <!-- ===== 2. ПЕРВЫЙ ЭКРАН ===== -->
-    <!-- Портрет — главный акцент: справа на планшете и десктопе, над именем на
-         телефоне (в DOM он первый, сетка переставляет). Имя набрано как латунная
-         табличка. Имя секции — из видимого заголовка (aria-labelledby), так у всех. -->
+    <!-- Фото — главный акцент: справа на десктопе, сверху на планшете и телефоне
+         (в DOM оно первое). Имя набрано как латунная табличка. Имя секции —
+         из видимого заголовка (aria-labelledby), так у всех. -->
     <section class="hero theme-hero" id="top" aria-labelledby="hero-title">
       <div class="hero__inner container">
-        <!-- Фото в полный рост: build-images.sh собирает эти файлы из
-             assets/img/src/hero.jpg. Кадр 2 : 3 показывается целиком —
-             лицо и руки не обрезаются ни на одной ширине.
-             Не lazy и fetchpriority="high": снимок в первом экране. -->
-        <figure class="hero__portrait">
+        <!-- Фото в полный рост без фона: build-images.sh собирает эти файлы из
+             assets/img/src/hero-cutout.png (вырезка из hero.jpg — tools/cutout.py).
+             Прозрачные AVIF/WebP, запасной — PNG (у JPG нет прозрачности).
+             Без рамки; на десктопе — справа на всю высоту, на телефоне — сверху.
+             Не lazy и fetchpriority="high": это LCP. -->
+        <figure class="hero__figure">
           <picture>
             <source type="image/avif"
                     srcset="assets/img/hero-480.avif 480w, assets/img/hero-852.avif 852w"
-                    sizes="(min-width: 48em) min(28rem, 38vw), 14rem">
+                    sizes="(min-width: 64em) calc((100vh - 9.5rem) * 0.667), min(100vw, 26rem)">
             <source type="image/webp"
                     srcset="assets/img/hero-480.webp 480w, assets/img/hero-852.webp 852w"
-                    sizes="(min-width: 48em) min(28rem, 38vw), 14rem">
-            <img class="hero__photo" src="assets/img/hero-800.jpg" width="800" height="1200"
+                    sizes="(min-width: 64em) calc((100vh - 9.5rem) * 0.667), min(100vw, 26rem)">
+            <img class="hero__photo" src="assets/img/hero-640.png" width="852" height="1278"
                  alt="Дмитриев Александр Николаевич, адвокат" fetchpriority="high">
           </picture>
         </figure>
@@ -326,7 +328,7 @@
         <dl class="plinth__list">
           <div class="plinth__item">
             <dt class="plinth__label">Приём</dt>
-            <dd class="plinth__value">Ежедневно, 10:00–18:00, по&nbsp;записи</dd>
+            <dd class="plinth__value">Ежедневно, <span class="nowrap">10:00–18:00</span>, по&nbsp;записи</dd>
           </div>
           <div class="plinth__item">
             <dt class="plinth__label">Офис в&nbsp;<span class="nowrap">Санкт-Петербурге</span></dt>

@@ -872,76 +872,71 @@ a[href^='tel:'] {
 
 /* ----- Первый экран ----- */
 
-/* Фото в полный рост — главный акцент экрана: справа на планшете
-   и десктопе, над именем на телефоне. Кадр 2 : 3 показывается целиком
-   (object-fit не режет: пропорции блока и снимка совпадают) — лицо и руки
-   не обрезаются ни на одной ширине. Рамка «в тон»: паспарту цвета карточки темы и тонкий кант
-   акцентного цвета в 10 px от края снимка, как у латунной рамки. */
+/* Фото в полный рост без фона — как на сайтах больших адвокатских бюро:
+   без рамки и подложки, человек «стоит» на зелёном фоне первого экрана,
+   сзади — мягкое свечение чуть светлее фона, чтобы фигура не выглядела
+   наклеенной. Десктоп (от 1024 px): справа, на всю высоту — от шапки до
+   полосы «Приём / Офисы», низ пиджака уходит под неё. Планшет и телефон:
+   сверху, во всю ширину, низ растворяется в фоне перед именем. */
 .hero {
   position: relative;
   isolation: isolate;
   overflow: hidden;
 }
 
-/* Телефон: обычный поток, фото обтекается — строка «Адвокат … рег. №»
-   встаёт справа от него, имя — под ним. Так фото крупнее, а «Позвонить»
-   всё равно в первом экране. С 768 px — сетка в две колонки (раздел 7). */
 .hero__inner {
   position: relative;
   z-index: 1;
-  display: block;
-  padding-block: 1.25rem clamp(2.5rem, 1.786rem + 3.571vw, 4rem);
+  padding-block: 0 clamp(2.5rem, 1.786rem + 3.571vw, 4rem);
 }
 
 /* С JS шапка фиксированная — первый экран уходит под неё */
 .js .hero__inner {
-  padding-top: calc(var(--header-h) + 1.25rem);
+  padding-top: var(--header-h);
 }
 
-/* Телефон: высота фото — то, что остаётся от экрана после шапки и текста
-   до кнопки «Позвонить» (≈ 28 rem, замер на 320–430 px), но не меньше
-   9.5 rem и не больше 21 rem: кнопка — в первом экране и на iPhone SE
-   (375 × 667), а на больших телефонах фото крупнее. */
-.hero__portrait {
-  float: left;
-  height: clamp(9.5rem, 100vh - 28rem, 21rem);
-  height: clamp(9.5rem, 100svh - 28rem, 21rem);
-  aspect-ratio: 2 / 3;
-  margin: 0 1rem 1.25rem 0;
-  padding: 0.375rem;
-  border: 1px solid var(--line-strong);
-  border-radius: var(--radius);
-  background-color: var(--card);
-}
-
-.hero__portrait picture {
+/* Телефон и планшет: полоса с фото во всю ширину экрана (отрицательные поля
+   = поля контейнера). Высота — то, что остаётся от экрана после шапки и текста
+   до кнопки «Позвонить» (≈ 31 rem, замер на 320–430 px), в пределах 13–28 rem:
+   кнопка видна без прокрутки на 375 × 812 и даже на 375 × 667. Фигура
+   кадрируется сверху (object-position: top) — лицо всегда целиком. */
+.hero__figure {
   position: relative;
-  display: block;
-  height: 100%;
-  overflow: hidden;
-  background-color: var(--p-plate);
+  height: clamp(13rem, 100vh - 31rem, 28rem);
+  height: clamp(13rem, 100svh - 31rem, 28rem);
+  margin: 0 calc(-1 * var(--gutter)) 1.25rem;
 }
 
-.hero__portrait picture::after {
+/* Свечение за фигурой: радиальный градиент белого 4–14 % поверх зелёного */
+.hero__figure::before {
   content: '';
   position: absolute;
-  inset: 8%;
-  inset: min(10px, 6%);
-  border: 1px solid rgb(var(--d-accent-rgb) / 0.6);
+  inset: 4% 0 0;
+  z-index: -1;
+  background: radial-gradient(closest-side at 50% 42%, rgb(255 255 255 / 0.14), rgb(255 255 255 / 0.05) 62%, transparent);
   pointer-events: none;
+}
+
+/* Шире 26 rem фигура не растёт: на планшете в полосу попадает торс, а не
+   одно лицо во весь экран. Низ растворяется в фоне — без жёсткого среза. */
+.hero__figure picture {
+  display: block;
+  width: min(100%, 26rem);
+  height: 100%;
+  margin-inline: auto;
+  -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 98%);
+  mask-image: linear-gradient(to bottom, #000 70%, transparent 98%);
 }
 
 .hero__photo {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: 50% 0;
 }
 
-/* Кегль имени — от ширины колонки (container query) — с 768 px. На телефоне
-   контейнера нет: он не дал бы тексту обтекать фото, а cqi без контейнера
-   считается от ширины экрана — для одной колонки это то же самое. */
 .hero__content {
-  container-type: normal;
+  container-type: inline-size;   /* кегль имени — от ширины колонки */
 }
 
 .hero__meta {
@@ -958,7 +953,6 @@ a[href^='tel:'] {
    Кегль не больше ширины колонки / 6.2 («Александр Николаевич» при 0.5em
    ≈ 11.4 кегля имени, плюс запас на запасной шрифт), чтобы строка не рвалась. */
 .hero__title {
-  clear: left;
   font-size: var(--fs-h1);
   font-size: min(var(--fs-h1), 100cqi / 6.2);
   font-weight: 650;
@@ -2362,34 +2356,6 @@ a.footer__studio {
     flex-wrap: wrap;
   }
 
-  /* Планшет и шире: текст слева, фото справа. Ширина — не больше колонки,
-     28 rem и того, что помещается по высоте экрана за вычетом шапки, цоколя
-     и полей (15.5 rem); высота следует из пропорции 2 : 3. */
-  .hero__inner {
-    display: grid;
-    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
-    align-items: center;
-    column-gap: clamp(2rem, 5vw, 6rem);
-  }
-
-  .hero__content {
-    grid-column: 1;
-    grid-row: 1;
-    container-type: inline-size;
-  }
-
-  .hero__portrait {
-    float: none;
-    grid-column: 2;
-    grid-row: 1;
-    justify-self: end;
-    margin: 0;
-    width: min(100%, 28rem, (100vh - 15.5rem) * 2 / 3);
-    width: min(100%, 28rem, (100svh - 15.5rem) * 2 / 3);
-    height: auto;
-    padding: 0.5rem;
-  }
-
   .directions__list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
@@ -2533,9 +2499,14 @@ a.footer__studio {
     transform: none;
   }
 
-  /* Первый экран вместе с цоколем занимает ровно экран: имя и портрет —
-     по центру высоты, цоколь — нижний край. 4.75rem — высота цоколя. */
+  /* Первый экран вместе с цоколем занимает ровно экран: текст — по центру
+     высоты в левой колонке (7 из 12), цоколь — нижний край. 4.75rem — высота
+     цоколя. Правая колонка пустая: в ней стоит фигура (абсолютно, ниже). */
   .hero__inner {
+    display: grid;
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    align-items: center;
+    column-gap: clamp(2rem, 5vw, 6rem);
     min-height: calc(100vh - 4.75rem);
     min-height: calc(100svh - 4.75rem);
     padding-bottom: 3rem;
@@ -2543,6 +2514,48 @@ a.footer__studio {
 
   .js .hero__inner {
     padding-top: calc(var(--header-h) + 3rem);
+  }
+
+  .hero__content {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  /* Фигура — от низа шапки до низа первого экрана (верх цоколя), прижата
+     к правому краю колонки текста сайта. Ширина — из пропорции 2 : 3, но не
+     больше 46 % ширины: на высоких экранах (iPad Pro, 1920 × 1080) она не
+     заходит на текст; тогда снимок вписывается по ширине и стоит на нижнем
+     крае (object-fit: contain, низ). */
+  .hero__figure {
+    position: absolute;
+    top: 0;
+    right: var(--gutter);
+    bottom: 0;
+    width: auto;
+    max-width: 46%;
+    height: auto;
+    aspect-ratio: 2 / 3;
+    margin: 0;
+  }
+
+  .js .hero__figure {
+    top: var(--header-h);
+  }
+
+  .hero__figure::before {
+    inset: 6% -14% 4%;
+    background: radial-gradient(closest-side at 50% 40%, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.04) 64%, transparent);
+  }
+
+  .hero__figure picture {
+    width: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .hero__photo {
+    object-fit: contain;
+    object-position: 50% 100%;
   }
 
   .hero__messengers {
