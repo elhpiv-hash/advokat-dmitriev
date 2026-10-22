@@ -14,8 +14,9 @@
 #  • .htaccess убран (на Pages не действует), добавлен .nojekyll.
 #
 #  Запуск:   bash tools/publish-pages.sh
-#  Ветка gh-pages целиком генерируется этим скриптом и перезаписывается
-#  при каждом запуске (push --force) — руками её не правят.
+#  Ветка gh-pages целиком генерируется этим скриптом: каждый запуск — новый
+#  коммит поверх неё с текущим содержимым dist/ (без push --force). Руками
+#  её не правят.
 # ==========================================================================
 
 set -euo pipefail
@@ -60,12 +61,28 @@ fs.writeFileSync(file('robots.txt'), '# Демо для показа — в по
 console.log(`→ демо: ${prodUrl} → ${pagesUrl}, noindex`);
 NODE
 
-cd "$TMP"
-git init -q
-git checkout -q -b gh-pages
-git add -A
-git commit -q -m "Демо для показа: $(date '+%Y-%m-%d %H:%M')
+# Рабочая копия ветки gh-pages: существующая — забираем, нет — создаём новую
+REMOTE="https://github.com/$REPO.git"
+WORK="$(mktemp -d)"
+trap 'rm -rf "$TMP" "$WORK"' EXIT
+if git ls-remote --exit-code --heads "$REMOTE" gh-pages >/dev/null 2>&1; then
+  git clone -q --depth 1 --branch gh-pages "$REMOTE" "$WORK"
+else
+  git init -q "$WORK"
+  git -C "$WORK" checkout -q -b gh-pages
+fi
+
+# Содержимое ветки = текущее демо (всё, кроме .git, заменяется)
+find "$WORK" -mindepth 1 -maxdepth 1 ! -name .git -exec rm -rf {} +
+cp -R "$TMP"/. "$WORK"/
+
+git -C "$WORK" add -A
+if git -C "$WORK" diff --cached --quiet; then
+  echo "→ изменений нет — публиковать нечего"
+  exit 0
+fi
+git -C "$WORK" commit -q -m "Демо для показа: $(date '+%Y-%m-%d %H:%M')
 
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
-git push -q --force "https://github.com/$REPO.git" gh-pages
+git -C "$WORK" push -q "$REMOTE" gh-pages
 echo "→ опубликовано: $PAGES_URL (обновление Pages — около минуты)"
