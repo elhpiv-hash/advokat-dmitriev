@@ -2644,9 +2644,14 @@ a.footer__studio {
      абсолютная и на раскладку не влияет. Высота снимка — 1.25 видимой высоты
      первого экрана (от низа шапки до цоколя = высота слота + два поля по
      3 rem): человек крупнее, а низ уходит под цоколь по поясу — висящая кисть
-     скрывается целиком, а не режется по пальцам. Ширина — из пропорции 2 : 3;
-     предел ширины — чтобы человек (81 % ширины кадра) заходил в зазор между
-     колонками не дальше чем на 1 rem: (½ слота + зазор − 1 rem) / 0.405. */
+     скрывается целиком, а не режется по пальцам. Ширина — из пропорции 2 : 3.
+
+     По горизонтали фигура — посередине свободного места между текстом
+     и правым краем колонок сайта. Правый край текста — левая колонка, но не
+     шире 33 rem (длина строк лида и имени): центр = (min(слот, 33rem) − зазор) / 2
+     от левого края слота. Второе значение в max() — страховка на крупных
+     экранах: человек (81 % ширины кадра, половина = 0.3375 высоты видимой
+     части) не подходит к тексту ближе 3 rem. */
   .hero__figure {
     position: relative;
     grid-column: 2;
@@ -2656,17 +2661,27 @@ a.footer__studio {
     margin: 0;
   }
 
+  /* Свечение — за самой фигурой (у <picture>), а не по центру колонки */
   .hero__figure::before {
-    inset: -3rem -12% -3rem;
-    background: radial-gradient(closest-side at 50% 38%, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.04) 64%, transparent);
+    content: none;
+  }
+
+  .hero__figure picture::before {
+    content: '';
+    position: absolute;
+    inset: 0 -22% 22%;
+    z-index: -1;
+    background: radial-gradient(closest-side at 50% 34%, rgb(255 255 255 / 0.13), rgb(255 255 255 / 0.04) 64%, transparent);
+    pointer-events: none;
   }
 
   .hero__figure picture {
     position: absolute;
     top: -3rem;
-    left: 50%;
+    left: max((min(100%, 33rem) - var(--hero-gap)) / 2, min(100%, 33rem) - 100% - var(--hero-gap) + 3rem + (100vh - 9.5rem) * 0.3375);
+    left: max((min(100%, 33rem) - var(--hero-gap)) / 2, min(100%, 33rem) - 100% - var(--hero-gap) + 3rem + (100svh - 9.5rem) * 0.3375);
     width: auto;
-    max-width: calc((50% + var(--hero-gap) - 1rem) * 2.47);
+    max-width: calc(100% + var(--hero-gap) * 2);
     height: calc((100% + 6rem) * 1.25);
     aspect-ratio: 2 / 3;
     margin: 0;
