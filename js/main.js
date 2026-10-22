@@ -33,6 +33,16 @@
     email: 'dan911777@mail.ru'
   });
 
+  /**
+   * Яндекс.Метрика: номер счётчика строкой, например '12345678'.
+   * Пусто — Метрика не загружается совсем, и плашка о cookie не показывается
+   * (без Метрики сайт cookie не ставит). Названия целей — в README.
+   */
+  const METRIKA_ID = '';
+
+  // Отметка о согласии на cookie — в localStorage (в браузере посетителя)
+  const CONSENT_KEY = 'cookie-consent';
+
   const root = document.documentElement;
 
   /* MediaQueryList, а не разовое значение: .matches читается в момент действия,
@@ -395,7 +405,9 @@
     const state = { keyboard: false, editing: false, heroVisible: false };
 
     function render() {
-      bar.classList.toggle('mobile-bar--visible', !(state.keyboard || state.editing || state.heroVisible));
+      const visible = !(state.keyboard || state.editing || state.heroVisible);
+      bar.classList.toggle('mobile-bar--visible', visible);
+      root.classList.toggle('has-mobile-bar', visible);   // CSS: плашка cookie — над панелью
     }
 
     /* Основной сигнал — visualViewport: экранная клавиатура уменьшает видимую
@@ -445,6 +457,145 @@
   }
 
 
+  /* ----- Cookie и Яндекс.Метрика ----- */
+
+  /* localStorage бывает недоступен (приватный режим, запрет в настройках) —
+     поэтому только в try/catch. Без хранилища согласие живёт до перезагрузки. */
+  function hasConsent() {
+    try { return window.localStorage.getItem(CONSENT_KEY) === '1'; } catch (error) { return false; }
+  }
+
+  function saveConsent() {
+    try { window.localStorage.setItem(CONSENT_KEY, '1'); } catch (error) { /* без хранилища */ }
+  }
+
+  /* Официальный код счётчика, разобранный по шагам: очередь вызовов ym()
+     до загрузки tag.js, сам скрипт и инициализация. Вебвизор и карта кликов
+     выключены — политика конфиденциальности их не описывает. */
+  function loadMetrika() {
+    if (!METRIKA_ID || typeof window.ym === 'function') return;
+
+    window.ym = function () {
+      (window.ym.a = window.ym.a || []).push(arguments);
+    };
+    window.ym.l = Date.now();
+
+    const script = document.createElement('script');
+    script.async = true;
+    script.src = 'https://mc.yandex.ru/metrika/tag.js';
+    document.head.appendChild(script);
+
+    window.ym(Number(METRIKA_ID), 'init', {
+      clickmap: false,
+      trackLinks: true,
+      accurateTrackBounce: true,
+      webvisor: false
+    });
+  }
+
+  /* Плашка: показывается, только если Метрика настроена и согласия нет.
+     Высота плашки — в --cookie-h: подвал получает отступ снизу, и плашка
+     не закрывает его последние строки. */
+  function initCookies() {
+    if (!METRIKA_ID) return;
+    if (hasConsent()) {
+      loadMetrika();
+      return;
+    }
+
+    const banner = document.querySelector('[data-cookie]');
+    const accept = banner && banner.querySelector('[data-cookie-accept]');
+    if (!accept) return;
+
+    const measure = onFrame(function () {
+      root.style.setProperty('--cookie-h', banner.offsetHeight + 'px');
+    });
+
+    banner.hidden = false;
+    root.classList.add('has-cookie');
+    measure();
+    window.addEventListener('resize', measure, { passive: true });
+
+    accept.addEventListener('click', function () {
+      saveConsent();
+      banner.hidden = true;
+      root.classList.remove('has-cookie');
+      window.removeEventListener('resize', measure);
+      loadMetrika();
+    });
+  }
+
+  /* Цели Метрики — клики по способам связи. Срабатывают, только когда
+     Метрика загружена, то есть после согласия. */
+  function initGoals() {
+    const goals = [
+      ['a[href^="tel:"]', 'click_phone'],
+      ['a[href^="mailto:"]', 'click_email'],
+      ['a[href*="t.me/"]', 'click_telegram'],
+      ['[data-site="max-link"]', 'click_max']
+    ];
+
+    document.addEventListener('click', function (event) {
+      if (!METRIKA_ID || typeof window.ym !== 'function') return;
+      for (let i = 0; i < goals.length; i++) {
+        if (event.target.closest(goals[i][0])) {
+          window.ym(Number(METRIKA_ID), 'reachGoal', goals[i][1]);
+          return;
+        }
+      }
+    });
+  }
+
+  /* «Отозвать согласие» на странице политики: удаляет отметку о согласии,
+     cookie и записи Метрики (_ym…) этого сайта и перезагружает страницу —
+     после перезагрузки Метрика не загружается, а плашка спрашивает снова. */
+  function initRevoke() {
+    const box = document.querySelector('[data-cookie-revoke]');
+    if (!box || !METRIKA_ID || !hasConsent()) return;
+
+    box.hidden = false;
+    box.querySelector('button').addEventListener('click', function () {
+      try { window.localStorage.removeItem(CONSENT_KEY); } catch (error) { /* без хранилища */ }
+
+      const host = window.location.hostname.replace(/^www\./, '');
+      document.cookie.split(';').forEach(function (part) {
+        const name = part.split('=')[0].trim();
+        if (name.indexOf('_ym') !== 0) return;
+        ['', host, '.' + host].forEach(function (domain) {
+          document.cookie = name + '=; Max-Age=0; path=/' + (domain ? '; domain=' + domain : '');
+        });
+      });
+      try {
+        Object.keys(window.localStorage).forEach(function (key) {
+          if (key.indexOf('_ym') === 0) window.localStorage.removeItem(key);
+        });
+      } catch (error) { /* без хранилища */ }
+
+      window.location.reload();
+    });
+  }
+
+
+  /* ----- Переход на раздел с другой страницы ----- */
+
+  /* Ссылки вида ../#practice со страницы политики: секции ниже первого экрана
+     рендерятся лениво (content-visibility), и браузер прокрутил бы к цели по
+     оценочным высотам. Включаем полный рендер и прокручиваем ещё раз точно. */
+  function initHashOnLoad(header) {
+    const id = decodeURIComponent(window.location.hash.slice(1));
+    const target = id && document.getElementById(id);
+    if (!target) return;
+
+    root.classList.add('is-fully-rendered');
+    window.requestAnimationFrame(function () {
+      const top = target.getBoundingClientRect().top + window.scrollY - header.height();
+      header.pin(600);
+      // instant: у html стоит scroll-behavior: smooth, 'auto' унаследовал бы его
+      window.scrollTo({ top: Math.max(top, 0), behavior: 'instant' });
+    });
+  }
+
+
   /* ----- Запуск ----- */
 
   /* Скрипт подключён с defer, поэтому к моменту выполнения DOM уже разобран,
@@ -458,6 +609,10 @@
     initSmoothScroll(header);
     initMap();
     initMobileBar();
+    initCookies();
+    initGoals();
+    initRevoke();
+    initHashOnLoad(header);
 
     // Всё инициализировано — отключаем CSS-страховку (failsafe-show) для скрытых блоков
     root.classList.add('is-ready');

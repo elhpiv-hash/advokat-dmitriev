@@ -26,6 +26,10 @@ AddDefaultCharset utf-8
   Options -Indexes
 </IfModule>
 
+# Своя страница «не найдено» — в стиле сайта. Путь от корня: 404.html
+# подключает стили и скрипт по путям от корня, поэтому работает на любом адресе.
+ErrorDocument 404 /404.html
+
 
 # ----- Запрет отдачи служебных файлов -------------------------------------
 # Исходные заметки, логи, бэкапы и скрипт сборки не должны открываться по URL.
@@ -50,19 +54,30 @@ AddDefaultCharset utf-8
 </IfModule>
 
 
-# ----- HTTPS и единый домен (включить после настройки SSL) ---------------
-# Раскомментировать, когда на хостинге заработает сертификат. Если сайт за
-# прокси (Cloudflare и т. п.), проверять нужно X-Forwarded-Proto, а не HTTPS.
+# ----- HTTPS и единый домен ------------------------------------------------
+# Все адреса ведут на основной адрес — https, без www. Домен в правилах подставляет
+# build.sh из SITE_URL. Сертификат Let's Encrypt должен быть выпущен ДО того, как
+# эти правила окажутся на сервере (порядок — в README), иначе посетитель
+# с http попадёт на https без сертификата и увидит предупреждение браузера.
 #
-# <IfModule mod_rewrite.c>
-#   RewriteEngine On
-#   RewriteCond %{HTTPS} !=on
-#   RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
-#
-#   # www → без www (домен подставляет build.sh из SITE_URL)
-#   RewriteCond %{HTTP_HOST} ^www\.example\.ru$ [NC]
-#   RewriteRule ^ https://example.ru%{REQUEST_URI} [R=301,L]
-# </IfModule>
+# На REG.RU сайт может стоять за nginx: тогда Apache получает обычный http,
+# а признак https приходит в заголовке X-Forwarded-Proto. Проверяем оба —
+# иначе переадресация пошла бы по кругу. Если браузер всё же пишет «слишком
+# много переадресаций», закомментируйте первые три строки RewriteCond/Rule
+# и включите в панели хостинга «Перенаправлять HTTP-запросы в HTTPS».
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # http → https (сразу на адрес без www)
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://advokat-dan.online%{REQUEST_URI} [R=301,L]
+
+  # https://www → https:// без www
+  RewriteCond %{HTTP_HOST} ^www\.advokat-dan\.online$ [NC]
+  RewriteRule ^ https://advokat-dan.online%{REQUEST_URI} [R=301,L]
+</IfModule>
 
 
 # ----- Сжатие --------------------------------------------------------------
@@ -87,9 +102,9 @@ AddDefaultCharset utf-8
 
 
 # ----- Кэширование ---------------------------------------------------------
-# CSS и JS подключаются с ?v=N и кэшируются на год как immutable: браузер
-# даже не спрашивает сервер об изменениях. Поэтому после каждой пересборки
-# увеличивайте v в index.html — новый URL сразу обходит кэш.
+# CSS и JS подключаются с ?v=<хеш содержимого> и кэшируются на год как
+# immutable: браузер даже не спрашивает сервер об изменениях. Хеш ставит
+# build.sh — изменился файл, изменился и URL, кэш обходится сам.
 # Шрифты кэшируются так же: при обновлении шрифта меняется имя файла.
 # HTML — no-cache: браузер хранит копию, но каждый раз сверяется с сервером,
 # так что правки страницы видны сразу, а ссылки на новые ?v= — подхватываются.
@@ -140,9 +155,12 @@ AddDefaultCharset utf-8
   # style-src 'unsafe-inline' — ради атрибутов style="--v: …" у диаграмм:
   #   данные хранятся в разметке. Риск минимален: пользовательского контента на сайте нет.
   # img-src data: — фактура гранита (SVG-шум в CSS).
-  # frame-src — единственный внешний ресурс, виджет Яндекс Карт.
+  # Яндекс.Метрика (грузится только после согласия на cookie): скрипт tag.js
+  #   с mc.yandex.ru (+ yastatic.net), отправка данных — запросами и пикселем
+  #   на mc.yandex.ru / mc.yandex.com. Список — по документации Метрики.
+  # frame-src — виджет Яндекс Карт (*.yandex.ru покрывает и mc.yandex.ru).
   <FilesMatch "\.html?$">
-    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw='; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-src https://yandex.ru https://*.yandex.ru; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'self'"
+    Header always set Content-Security-Policy "default-src 'self'; script-src 'self' 'sha256-/x7W7R75k8Roq0WaVRQX9blP4OufE5xbAdzklGxsgpw=' https://mc.yandex.ru https://yastatic.net; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://mc.yandex.ru https://mc.yandex.com; font-src 'self'; connect-src 'self' https://mc.yandex.ru https://mc.yandex.com; frame-src https://yandex.ru https://*.yandex.ru; object-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'self'"
   </FilesMatch>
 
   # HSTS — включить только когда HTTPS настроен окончательно: после этого браузеры

@@ -1,8 +1,5 @@
 # Адрес в строке Sitemap подставляет build.sh из SITE_URL.
-# robots.txt действует только в корне домена: если сайт лежит в подпапке,
-# поисковики этот файл не читают.
 User-agent: *
 Allow: /
-Disallow: /tools/
 
-Sitemap: https://example.ru/sitemap.xml
+Sitemap: https://advokat-dan.online/sitemap.xml

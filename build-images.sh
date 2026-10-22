@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
 # ==========================================================================
-#  build-images.sh — портрет, og-cover и favicon.ico
+#  build-images.sh — фото, og-cover, favicon и apple-touch-icon
 #  --------------------------------------------------------------------------
 #  1. Два снимка (исходники в assets/img/src/, подойдут .jpg .jpeg .png .webp):
-#     hero.jpg  — первый экран (фото в полный рост) →
-#                 assets/img/hero-480|800|1200.avif|webp, hero-800.jpg
+#     hero.jpg  — первый экран, фото в полный рост, кадр 2 : 3 →
+#                 assets/img/hero-480|852.avif|webp, hero-800.jpg
 #                 Пока его нет, в первом экране — заглушка (портрет из about.jpg
 #                 туда не ставим: он уже есть в «Об адвокате»).
-#     about.jpg — портрет в «Об адвокате» →
-#                 assets/img/about-480|800.avif|webp, about-800.jpg
-#     Кадр — 4 : 5, обрезка по «интересной» области (лицо), а не по центру.
+#     about.jpg — портрет за столом в «Об адвокате», кадр 10 : 13 →
+#                 assets/img/about-480|800|978.avif|webp, about-800.jpg
+#     Пропорции кадров совпадают с исходниками (852 × 1280, 978 × 1280):
+#     снимок почти не обрезается — лицо и руки целиком. Если пропорции нового
+#     исходника другие, лишнее срезается по «интересной» области (лицу).
+#     Самая крупная ширина — ширина исходника: увеличивать снимок незачем.
 #     Если нет и исходника — те же файлы рисуются как аккуратная заглушка:
 #     монограмма «ДА» в двойной рамке на ПРОЗРАЧНОМ фоне (AVIF/WebP) —
 #     фон даёт CSS (--p-plate), поэтому заглушка подходит к любой палитре.
@@ -18,7 +21,8 @@
 #  2. assets/img/og-cover.jpg (1200 × 630) — превью ссылки в мессенджерах:
 #     имя, направления, телефон и портрет из about.jpg (или заглушка). Текст переводится
 #     в контуры прямо из woff2 Geologica — браузер и системные шрифты не нужны.
-#  3. assets/img/favicon.svg и favicon.ico (16, 32, 48 px).
+#  3. assets/img/favicon.svg, favicon.ico (16, 32, 48 px) и
+#     apple-touch-icon.png (180 px, для «На экран „Домой“» в iOS).
 #
 #  Цвета og-cover, favicon и фона JPG — палитры сайта «Зимний дворец»
 #  (те же, что --p-plate и --d-* в css/style.css).
@@ -88,11 +92,11 @@ function findSource(names) {
   return null;
 }
 
-// Наборы файлов. Пропорция ratio = высота / ширина; у первого экрана её
-// уточним под фото в полный рост, когда оно будет (сейчас там портрет 4 : 5).
+// Наборы файлов. ratio = высота / ширина — как у исходников; те же пропорции
+// заданы в CSS (aspect-ratio) и в width/height у <img> в index.html.
 const SETS = {
-  hero: { sources: ['hero'], widths: [480, 800, 1200], ratio: 1.25 },
-  about: { sources: ['about'], widths: [480, 800], ratio: 1.25 }
+  hero: { sources: ['hero'], widths: [480, 852], ratio: 1.5 },
+  about: { sources: ['about'], widths: [480, 800, 978], ratio: 1.3 }
 };
 
 // Заглушка 4 : 5: монограмма в тонкой двойной рамке на прозрачном фоне —
@@ -262,6 +266,19 @@ async function favicon() {
   fs.writeFileSync(out, Buffer.concat([header, ...pngs]));
   console.log('→ favicon');
   log(out, sizes.join('/'), '');
+
+  // apple-touch-icon 180 × 180: без прозрачности и скругления — iOS скругляет
+  // углы сам; поля вокруг рамки шире, чтобы знак не прилипал к краю маски
+  const touchSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <rect width="64" height="64" fill="${C.plate}"/>
+  <g transform="translate(6.4 6.4) scale(0.8)">
+    <rect x="7" y="7" width="50" height="50" fill="none" stroke="${C.accent}" stroke-width="2.5"/>
+    <path fill="${C.fg}" d="${MONO_64}"/>
+  </g>
+</svg>`;
+  const touch = 'apple-touch-icon.png';
+  await sharp(Buffer.from(touchSvg), { density: 72 * 180 / 64 * 2 }).resize(180, 180).png().toFile(touch);
+  log(touch, 180, 180);
 }
 
 (async () => {

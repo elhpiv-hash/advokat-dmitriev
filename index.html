@@ -12,14 +12,14 @@
        размечены явными tel:-ссылками. -->
   <meta name="format-detection" content="telephone=no">
 
-  <title>Адвокат Дмитриев А. Н. — арбитраж, взыскание долгов, семейные дела · Санкт-Петербург</title>
-  <meta name="description" content="Адвокат Адвокатской палаты города Санкт-Петербурга, рег. № 78/5868, стаж более 22 лет. Арбитражные споры, взыскание задолженности, семейные дела и раздел имущества. Санкт-Петербург и Великий Новгород. Консультация бесплатно.">
+  <title>Адвокат Дмитриев А. Н. — арбитражные споры, взыскание долгов, семейные дела | Санкт-Петербург и Великий Новгород</title>
+  <meta name="description" content="Адвокат Адвокатской палаты города Санкт-Петербурга, рег. № 78/5868, стаж более 22 лет. Арбитражные споры, взыскание долгов, семейные дела и раздел имущества. Офисы в Санкт-Петербурге и Великом Новгороде. Консультация бесплатно.">
 
   <!-- Адрес сайта во всех абсолютных URL (canonical, Open Graph, Twitter, JSON-LD,
        robots.txt, sitemap.xml) подставляет build.sh из переменной SITE_URL.
        Вручную здесь не правьте: build.sh находит текущий адрес по canonical
        и заменяет его везде сразу. -->
-  <link rel="canonical" href="https://example.ru/">
+  <link rel="canonical" href="https://advokat-dan.online/">
 
   <!-- theme-color — цвет шапки (--p-deep): панель браузера на телефоне
        сливается с шапкой. color-scheme: страница в основном светлая. -->
@@ -41,16 +41,17 @@
        элемент (LCP). imagesrcset и imagesizes совпадают с <source> портрета —
        иначе браузер выберет по ним другой файл и скачает оба. -->
   <link rel="preload" as="image" type="image/avif" fetchpriority="high"
-        imagesrcset="assets/img/hero-480.avif 480w, assets/img/hero-800.avif 800w, assets/img/hero-1200.avif 1200w"
-        imagesizes="(min-width: 48em) min(30rem, 38vw), 17rem">
+        imagesrcset="assets/img/hero-480.avif 480w, assets/img/hero-852.avif 852w"
+        imagesizes="(min-width: 48em) min(28rem, 38vw), 14rem">
 
   <!-- Подключаются только минифицированные файлы (их собирает build.sh).
        ?v= — хеш содержимого файла, его тоже ставит build.sh: статика кэшируется
        на год (immutable), и новый хеш сразу обходит кэш. -->
-  <link rel="stylesheet" href="css/style.min.css?v=9517faaae5">
+  <link rel="stylesheet" href="css/style.min.css?v=20562c91e8">
 
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
   <!-- Open Graph / Twitter Card: только абсолютные URL — мессенджеры не разрешают
        относительные пути. Размеры картинки указаны явно, чтобы превью строилось сразу. -->
@@ -59,8 +60,8 @@
   <meta property="og:site_name" content="Адвокат Дмитриев А. Н.">
   <meta property="og:title" content="Адвокат Дмитриев Александр Николаевич — Санкт-Петербург и Великий Новгород">
   <meta property="og:description" content="Арбитражные споры, взыскание задолженности, семейные дела и раздел имущества. Стаж более 22 лет, рег. № 78/5868. Консультация бесплатно.">
-  <meta property="og:url" content="https://example.ru/">
-  <meta property="og:image" content="https://example.ru/assets/img/og-cover.jpg">
+  <meta property="og:url" content="https://advokat-dan.online/">
+  <meta property="og:image" content="https://advokat-dan.online/assets/img/og-cover.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -69,7 +70,7 @@
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Адвокат Дмитриев Александр Николаевич — Санкт-Петербург и Великий Новгород">
   <meta name="twitter:description" content="Арбитражные споры, взыскание задолженности, семейные дела. Стаж более 22 лет. Консультация бесплатно.">
-  <meta name="twitter:image" content="https://example.ru/assets/img/og-cover.jpg">
+  <meta name="twitter:image" content="https://advokat-dan.online/assets/img/og-cover.jpg">
   <meta name="twitter:image:alt" content="Дмитриев Александр Николаевич, адвокат, Санкт-Петербург и Великий Новгород">
 
   <!-- Schema.org: Attorney — подтип LocalBusiness: поисковики понимают адреса,
@@ -80,10 +81,10 @@
   {
     "@context": "https://schema.org",
     "@type": "Attorney",
-    "@id": "https://example.ru/#attorney",
+    "@id": "https://advokat-dan.online/#attorney",
     "name": "Адвокат Дмитриев Александр Николаевич",
-    "url": "https://example.ru/",
-    "image": "https://example.ru/assets/img/og-cover.jpg",
+    "url": "https://advokat-dan.online/",
+    "image": "https://advokat-dan.online/assets/img/og-cover.jpg",
     "telephone": "+7 921 730-03-05",
     "email": "dan911777@mail.ru",
     "address": [
@@ -135,7 +136,7 @@
   </script>
 
   <!-- defer: скрипт качается параллельно с разбором HTML и выполняется после него. -->
-  <script src="js/main.min.js?v=32994faec9" defer></script>
+  <script src="js/main.min.js?v=0b5f0e20a2" defer></script>
 </head>
 <body>
   <!-- Типографика: неразрывные пробелы записаны сущностью &nbsp;, чтобы их было
@@ -184,6 +185,17 @@
   </svg>
 
   <a class="skip-link" href="#main">Перейти к&nbsp;содержанию</a>
+
+  <!-- Плашка о cookie. Скрыта (hidden), пока main.js её не покажет: только если
+       задан METRIKA_ID и согласия ещё нет. Без Метрики сайт cookie не ставит —
+       и спрашивать не о чем. В DOM она в начале страницы, чтобы с клавиатуры
+       и скринридером до неё доходили сразу, а на экране — внизу. -->
+  <section class="cookie scheme-dark" aria-label="Уведомление о cookie" data-cookie hidden>
+    <div class="cookie__inner container">
+      <p class="cookie__text">Сайт использует cookie и&nbsp;Яндекс.Метрику для статистики. Подробнее&nbsp;— в&nbsp;<a href="privacy/">Политике конфиденциальности</a>.</p>
+      <button class="btn btn--primary btn--sm cookie__btn" type="button" data-cookie-accept>Понятно</button>
+    </div>
+  </section>
 
   <!-- ===== 1. ШАПКА ===== -->
   <header class="header" data-header>
@@ -253,19 +265,19 @@
          табличка. Имя секции — из видимого заголовка (aria-labelledby), так у всех. -->
     <section class="hero theme-hero" id="top" aria-labelledby="hero-title">
       <div class="hero__inner container">
-        <!-- Пути к фото — окончательные: build-images.sh собирает эти файлы из
-             assets/img/src/hero.jpg (фото в полный рост), а пока его нет —
-             заглушку с монограммой. Кадр показывается целиком.
+        <!-- Фото в полный рост: build-images.sh собирает эти файлы из
+             assets/img/src/hero.jpg. Кадр 2 : 3 показывается целиком —
+             лицо и руки не обрезаются ни на одной ширине.
              Не lazy и fetchpriority="high": снимок в первом экране. -->
         <figure class="hero__portrait">
           <picture>
             <source type="image/avif"
-                    srcset="assets/img/hero-480.avif 480w, assets/img/hero-800.avif 800w, assets/img/hero-1200.avif 1200w"
-                    sizes="(min-width: 48em) min(30rem, 38vw), 17rem">
+                    srcset="assets/img/hero-480.avif 480w, assets/img/hero-852.avif 852w"
+                    sizes="(min-width: 48em) min(28rem, 38vw), 14rem">
             <source type="image/webp"
-                    srcset="assets/img/hero-480.webp 480w, assets/img/hero-800.webp 800w, assets/img/hero-1200.webp 1200w"
-                    sizes="(min-width: 48em) min(30rem, 38vw), 17rem">
-            <img class="hero__photo" src="assets/img/hero-800.jpg" width="800" height="1000"
+                    srcset="assets/img/hero-480.webp 480w, assets/img/hero-852.webp 852w"
+                    sizes="(min-width: 48em) min(28rem, 38vw), 14rem">
+            <img class="hero__photo" src="assets/img/hero-800.jpg" width="800" height="1200"
                  alt="Дмитриев Александр Николаевич, адвокат" fetchpriority="high">
           </picture>
         </figure>
@@ -665,19 +677,18 @@
     <!-- ===== 9. ОБ АДВОКАТЕ ===== -->
     <section class="section theme-paper" id="about" aria-labelledby="about-title">
       <div class="container about">
-        <!-- Портрет (assets/img/src/about.jpg → build-images.sh). В первом экране —
-             фото в полный рост, здесь — портрет по пояс. На десктопе колонка
-             со снимком липкая; loading="lazy": раздел далеко от первого экрана.
-             Ширина не больше 20 rem: исходник небольшой, крупнее он стал бы мягким. -->
+        <!-- Портрет за столом (assets/img/src/about.jpg → build-images.sh), кадр
+             10 : 13 целиком. В первом экране — фото в полный рост. На десктопе
+             колонка со снимком липкая; loading="lazy": раздел далеко от первого экрана. -->
         <figure class="about__photo">
           <picture>
             <source type="image/avif"
-                    srcset="assets/img/about-480.avif 480w, assets/img/about-800.avif 800w"
-                    sizes="(min-width: 30em) 20rem, calc(100vw - 2.5rem)">
+                    srcset="assets/img/about-480.avif 480w, assets/img/about-800.avif 800w, assets/img/about-978.avif 978w"
+                    sizes="(min-width: 30em) 24rem, calc(100vw - 2.5rem)">
             <source type="image/webp"
-                    srcset="assets/img/about-480.webp 480w, assets/img/about-800.webp 800w"
-                    sizes="(min-width: 30em) 20rem, calc(100vw - 2.5rem)">
-            <img class="about__img" src="assets/img/about-800.jpg" width="800" height="1000"
+                    srcset="assets/img/about-480.webp 480w, assets/img/about-800.webp 800w, assets/img/about-978.webp 978w"
+                    sizes="(min-width: 30em) 24rem, calc(100vw - 2.5rem)">
+            <img class="about__img" src="assets/img/about-800.jpg" width="800" height="1040"
                  alt="Дмитриев Александр Николаевич, адвокат" loading="lazy" decoding="async">
           </picture>
         </figure>
@@ -927,6 +938,14 @@
         <li><a href="mailto:dan911777@mail.ru" data-site="email-link">Почта</a></li>
         <li><a href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">Telegram<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
       </ul>
+
+      <!-- Нижняя строка: ©, политика и — мелко — студия. Ссылку на студию
+           собирает build.sh из STUDIO_URL; пока он пуст — просто текст. -->
+      <div class="footer__legal">
+        <p class="footer__copy">© 2026 Адвокат Дмитриев А.&nbsp;Н.</p>
+        <a class="footer__policy" href="privacy/">Политика конфиденциальности</a>
+        <!-- studio --><span class="footer__studio">Сайт сделан в&nbsp;студии elhpiv</span><!-- /studio -->
+      </div>
     </div>
   </footer>
 
