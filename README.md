@@ -1,4 +1,4 @@
-# Сайт адвоката Дмитриева А. Н. — advokat-dan.online
+# Сайт адвоката Дмитриева А. Н. — advokat-dan.ru
 
 Статичный сайт без фреймворков: главная `index.html`, политика `privacy/index.html`,
 страница ошибки `404.html`; стили `css/style.css`, скрипт `js/main.js`.
@@ -7,25 +7,25 @@
 ## Сборка
 
 ```bash
-bash build-images.sh   # фото (AVIF/WebP/JPG), og-cover, favicon, apple-touch-icon
+bash build-images.sh   # фото (AVIF/WebP/PNG), og-cover, favicon, apple-touch-icon
 bash build.sh          # CSS/JS → *.min.*, домен, ?v=, CSP, sitemap, dist/ и zip
 ```
 
 Нужен Node.js 18+; инструменты npx/npm скачивает сам, в проекте нет `node_modules`.
-`build.sh` в конце собирает **`dist/`** и **`advokat-dan-online.zip`** — только файлы
+`build.sh` в конце собирает **`dist/`** и **`advokat-dan-ru.zip`** — только файлы
 для сервера (без `.git`, README, `*.sh`, `tools/`, `screenshots/`, `assets/img/src/`).
 
 ## Настройки — где что менять
 
 | Что | Где | После правки |
 |---|---|---|
-| Домен | `SITE_URL` в начале `build.sh` (сейчас `https://advokat-dan.online`) | `bash build.sh` |
+| Домен | `SITE_URL` в начале `build.sh` (сейчас `https://advokat-dan.ru`) | `bash build.sh` |
 | Яндекс.Метрика | `METRIKA_ID` в начале `js/main.js` (пусто — Метрики и плашки cookie нет) | `bash build.sh` |
 | Яндекс.Вебмастер | `YANDEX_VERIFICATION` в `build.sh` — только значение `content` | `bash build.sh` |
 | Ссылка на студию в подвале | `STUDIO_URL` в `build.sh` (пусто — просто текст) | `bash build.sh` |
 | MAX | `max` в `SITE` (`js/main.js`) — ссылка на профиль (`https://max.ru/u/…`); `build.sh` сам переносит её в `href` всех ссылок MAX и в `sameAs` JSON-LD. `maxPhoneText` — номер-подпись в контактах | `bash build.sh` |
 | Телефоны, почта, WhatsApp | объект `SITE` в `js/main.js` + запасные значения в разметке и JSON-LD | `bash build.sh` |
-| Фото | первый экран — `assets/img/src/hero-cutout.png` (в полный рост, без фона, 2 : 3); «Об адвокате» — `about.jpg` (10 : 13) | `bash build-images.sh`, затем `bash build.sh` |
+| Фото | одно, в первом экране и в og-cover — `assets/img/src/hero-cutout.png` (без фона, из `hero-new.jpg`, см. ниже) | `bash build-images.sh`, затем `bash build.sh` |
 
 Шапка, подвал, плашка cookie и мобильная панель повторены в трёх страницах
 (`index.html`, `privacy/index.html`, `404.html`) — при правке меняйте все три.
@@ -33,20 +33,26 @@ bash build.sh          # CSS/JS → *.min.*, домен, ?v=, CSP, sitemap, dist
 
 ## Фото первого экрана без фона
 
-`hero-cutout.png` вырезан из `hero.jpg` скриптом `tools/cutout.py`: маска — rembg
-(модель birefnet-portrait), затем очистка цвета краёв, чтобы по контуру волос
-и пиджака не оставался серый ореол студийного фона. Новый снимок:
+`hero-cutout.png` вырезан из `hero-new.jpg` (снимок клиента на улице) скриптом
+`tools/cutout.py`: маска — rembg (модель birefnet-portrait), очистка цвета краёв
+от неба и ёлок, контур 3 px — цветом изнутри фигуры. Небо над головой срезается,
+а плечи и грудь, упёртые в край кадра, растворяются к краю. Новый снимок:
 
 ```bash
 pip install "rembg[cpu]"
-python tools/cutout.py        # hero.jpg → hero-cutout.png (модель ~1 ГБ скачается при первом запуске)
-bash build-images.sh          # прозрачные AVIF/WebP + запасной PNG
+python tools/cutout.py        # hero-new.jpg → hero-cutout.png (модель ~1 ГБ скачается при первом запуске)
+bash build-images.sh          # прозрачные AVIF/WebP + запасной PNG, og-cover
 bash build.sh
 ```
 
-Перед публикацией — посмотреть края на зелёном: волосы, пальцы, очки. На десктопе
-фигура стоит справа на всю высоту первого экрана (от шапки до полосы «Приём / Офисы»),
-на планшете и телефоне — сверху, низ растворяется в фоне.
+У другого снимка будет другая пропорция после обрезки неба — её надо вписать
+в `SETS.hero.ratio` (`build-images.sh`), `width`/`height` у `<img>` и `aspect-ratio`
+в `css/style.css` (сейчас 960 × 943).
+
+Перед публикацией — посмотреть края на зелёном: волосы, борода, очки. На десктопе
+портрет стоит справа на всю высоту первого экрана (от шапки до полосы «Приём / Офисы»),
+на планшете и телефоне — сверху, низ растворяется в фоне. Второго фото нет:
+«Об адвокате» — без портрета.
 
 ## Яндекс.Метрика и cookie
 
@@ -71,24 +77,24 @@ CSP в `.htaccess` уже разрешает Метрику (`mc.yandex.ru`, `ya
 Порядок важен: сначала сертификат, потом файлы — в `.htaccess` включена
 переадресация на https, без сертификата браузер покажет предупреждение.
 
-1. **Домен на хостинге.** В личном кабинете REG.RU: «Домены» → advokat-dan.online →
+1. **Домен на хостинге.** В личном кабинете REG.RU: «Домены» → advokat-dan.ru →
    DNS-серверы — серверы хостинга REG.RU (`ns1.hosting.reg.ru`, `ns2.hosting.reg.ru`),
    если домен и хостинг в одном аккаунте, это обычно уже так. В панели хостинга
    (ISPmanager) домен должен быть добавлен как сайт: «Сайты» → «Создать», имя
-   `advokat-dan.online`, псевдоним `www.advokat-dan.online`.
+   `advokat-dan.ru`, псевдоним `www.advokat-dan.ru`.
 2. **SSL Let's Encrypt.** В ISPmanager: «SSL-сертификаты» → «Создать» → тип
-   «Let's Encrypt» → домен `advokat-dan.online` и `www.advokat-dan.online` →
+   «Let's Encrypt» → домен `advokat-dan.ru` и `www.advokat-dan.ru` →
    «Ок». Выпуск занимает от нескольких минут до часа (DNS должен уже указывать
    на хостинг). В личном кабинете REG.RU то же: «Хостинг» → «SSL-сертификаты» →
    бесплатный Let's Encrypt. Сертификат продлевается сам.
 3. **Файлы.** ISPmanager → «Менеджер файлов» → папка сайта
-   **`www/advokat-dan.online/`**. Удалить заглушку хостинга (`index.html`/`index.php`),
-   загрузить `advokat-dan-online.zip`, выделить → «Извлечь» в эту же папку.
-   `index.html` должен лежать прямо в `www/advokat-dan.online/`, не во вложенной
+   **`www/advokat-dan.ru/`**. Удалить заглушку хостинга (`index.html`/`index.php`),
+   загрузить `advokat-dan-ru.zip`, выделить → «Извлечь» в эту же папку.
+   `index.html` должен лежать прямо в `www/advokat-dan.ru/`, не во вложенной
    папке. `.htaccess` — тоже там (файл скрытый: включите показ скрытых файлов).
    Через FTP — то же содержимое `dist/` в ту же папку.
-4. **Проверка.** Открыть `http://advokat-dan.online` и `https://www.advokat-dan.online`
-   — оба должны перейти на `https://advokat-dan.online/`. Открыть несуществующий
+4. **Проверка.** Открыть `http://advokat-dan.ru` и `https://www.advokat-dan.ru`
+   — оба должны перейти на `https://advokat-dan.ru/`. Открыть несуществующий
    адрес — фирменная страница 404. Если браузер пишет «слишком много
    переадресаций», закомментируйте в `.htaccess` правило «http → https» (три строки)
    и включите в ISPmanager у сайта «Перенаправлять HTTP-запросы в HTTPS».
@@ -115,7 +121,7 @@ bash tools/publish-pages.sh
       создать четыре цели (таблица выше), `bash build.sh`, залить `dist/` заново.
 - [ ] Добавить сайт в Яндекс.Вебмастер, код подтверждения — в `YANDEX_VERIFICATION`
       (`build.sh`), `bash build.sh`, залить, нажать «Проверить» в Вебмастере.
-- [ ] В Вебмастере: «Индексирование» → «Файлы Sitemap» → `https://advokat-dan.online/sitemap.xml`.
+- [ ] В Вебмастере: «Индексирование» → «Файлы Sitemap» → `https://advokat-dan.ru/sitemap.xml`.
 - [ ] Ссылку на сайт — в карточки Яндекс Бизнес (оба офиса), 2ГИС (оба офиса)
       и в профиль на HARANT.
 - [ ] Дата редакции политики (`privacy/index.html`, сейчас 23 октября 2026 г.) —

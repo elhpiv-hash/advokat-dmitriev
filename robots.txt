@@ -2,4 +2,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://advokat-dan.online/sitemap.xml
+Sitemap: https://advokat-dan.ru/sitemap.xml

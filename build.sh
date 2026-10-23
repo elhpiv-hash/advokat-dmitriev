@@ -5,7 +5,8 @@
 #  1. css/style.css → css/style.min.css   (clean-css-cli 5)
 #  2. js/main.js    → js/main.min.js      (terser 5)
 #  3. Адрес сайта из SITE_URL — в canonical, Open Graph, Twitter, JSON-LD
-#     всех страниц (index.html, privacy/index.html), robots.txt, sitemap.xml
+#     всех страниц (index.html, privacy/index.html, 404.html) и домен в их тексте,
+#     robots.txt, sitemap.xml
 #     и в переадресации на https и без www (.htaccess).
 #  4. ?v= у style.min.css и main.min.js — хеш содержимого: статика кэшируется
 #     на год (immutable), новый хеш сразу обходит кэш. Вручную не трогать.
@@ -14,7 +15,7 @@
 #  7. Код Яндекс.Вебмастера (YANDEX_VERIFICATION) — meta в index.html,
 #     пустой — meta нет. Ссылка на студию (STUDIO_URL) — в подвале.
 #  8. Ссылка на профиль MAX из SITE.max (js/main.js) — в href ссылок MAX и в sameAs.
-#  9. dist/ — только файлы для сервера, и архив advokat-dan-online.zip
+#  9. dist/ — только файлы для сервера, и архив advokat-dan-ru.zip
 #     (без .git, README, *.sh, tools/, screenshots/, assets/img/src/).
 #
 #  Запуск:   bash build.sh
@@ -31,7 +32,7 @@ cd "$(dirname "$0")"
 
 # Адрес сайта — ЕДИНСТВЕННОЕ место, где задаётся домен. Поменяйте строку
 # и запустите bash build.sh — адрес обновится во всех файлах сразу.
-SITE_URL="https://advokat-dan.online"
+SITE_URL="https://advokat-dan.ru"
 
 # Код подтверждения Яндекс.Вебмастера: только значение content из
 # <meta name="yandex-verification" content="…">. Пусто — meta не выводится.
@@ -41,7 +42,7 @@ YANDEX_VERIFICATION=""
 STUDIO_URL=""
 
 # Архив для выкладки
-ZIP_NAME="advokat-dan-online.zip"
+ZIP_NAME="advokat-dan-ru.zip"
 
 CSS_SRC="css/style.css"
 CSS_MIN="css/style.min.css"
@@ -103,13 +104,14 @@ const oldUrl = canonical[1];
 
 if (oldUrl !== siteUrl) {
   const swap = (text) => text.split(oldUrl).join(siteUrl);
-  for (const file of pages) html[file] = swap(html[file]);
+  const oldHost = new URL(oldUrl).host;
+  const newHost = new URL(siteUrl).host;
+  // в страницах — и полные адреса, и домен в тексте (например, в политике)
+  for (const file of pages) html[file] = swap(html[file]).split(oldHost).join(newHost);
   robots = swap(robots);
   sitemap = swap(sitemap);
 
   // .htaccess: переадресации на https и без www
-  const oldHost = new URL(oldUrl).host;
-  const newHost = new URL(siteUrl).host;
   const esc = (host) => host.replace(/\./g, '\\.');
   htaccess = htaccess
     .split(`www${esc('.' + oldHost)}`).join(`www${esc('.' + newHost)}`)

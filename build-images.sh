@@ -2,26 +2,21 @@
 # ==========================================================================
 #  build-images.sh — фото, og-cover, favicon и apple-touch-icon
 #  --------------------------------------------------------------------------
-#  1. Два снимка (исходники в assets/img/src/, подойдут .jpg .jpeg .png .webp):
-#     hero-cutout.png — первый экран: фото в полный рост БЕЗ ФОНА (прозрачный
-#                 PNG; делается из hero.jpg скриптом tools/cutout.py) →
-#                 assets/img/hero-480|852.avif|webp с прозрачностью и
-#                 hero-640.png (запасной; JPG нет — у него нет прозрачности)
-#                 Пока его нет, в первом экране — заглушка (портрет из about.jpg
-#                 туда не ставим: он уже есть в «Об адвокате»).
-#     about.jpg — портрет за столом в «Об адвокате», кадр 10 : 13 →
-#                 assets/img/about-480|800|978.avif|webp, about-800.jpg
-#     Пропорции кадров совпадают с исходниками (852 × 1280, 978 × 1280):
-#     снимок почти не обрезается — лицо и руки целиком. Если пропорции нового
-#     исходника другие, лишнее срезается по «интересной» области (лицу).
-#     Самая крупная ширина — ширина исходника: увеличивать снимок незачем.
+#  1. Портрет для первого экрана — assets/img/src/hero-cutout.png: фото БЕЗ ФОНА
+#     (прозрачный PNG; делается из hero-new.jpg скриптом tools/cutout.py,
+#     небо над головой уже срезано, края кадра растушёваны) →
+#     assets/img/hero-480|960.avif|webp с прозрачностью и hero-640.png
+#     (запасной; JPG нет — у него нет прозрачности). Пропорция кадра — как
+#     у вырезки (960 × 943): снимок не обрезается. Самая крупная ширина —
+#     ширина исходника: увеличивать снимок незачем. Второго фото на сайте нет:
+#     «Об адвокате» — без портрета.
 #     Если нет и исходника — те же файлы рисуются как аккуратная заглушка:
 #     монограмма «ДА» в двойной рамке на ПРОЗРАЧНОМ фоне (AVIF/WebP) —
 #     фон даёт CSS (--p-plate), поэтому заглушка подходит к любой палитре.
 #     Заменить фото = положить файл в assets/img/src/ и запустить скрипт;
 #     index.html трогать не нужно — пути у фото и заглушки одинаковые.
 #  2. assets/img/og-cover.jpg (1200 × 630) — превью ссылки в мессенджерах:
-#     имя, направления, телефон и портрет из about.jpg (или заглушка). Текст переводится
+#     имя, направления, телефон и портрет из первого экрана. Текст переводится
 #     в контуры прямо из woff2 Geologica — браузер и системные шрифты не нужны.
 #  3. assets/img/favicon.svg, favicon.ico (16, 32, 48 px) и
 #     apple-touch-icon.png (180 px, для «На экран „Домой“» в iOS).
@@ -98,11 +93,10 @@ function findSource(names) {
 // заданы в CSS (aspect-ratio) и в width/height у <img> в index.html.
 // alpha — набор с прозрачностью: запасной формат PNG, а не JPG.
 const SETS = {
-  hero: { sources: ['hero-cutout'], widths: [480, 852], ratio: 1.5, alpha: true },
-  about: { sources: ['about'], widths: [480, 800, 978], ratio: 1.3 }
+  hero: { sources: ['hero-cutout'], widths: [480, 960], ratio: 943 / 960, alpha: true }
 };
 
-// Заглушка 4 : 5: монограмма в тонкой двойной рамке на прозрачном фоне —
+// Заглушка: монограмма в тонкой двойной рамке на прозрачном фоне —
 // фон и цвет подложки даёт CSS, поэтому заглушка подходит к любой палитре.
 // Линии и буквы белые полупрозрачные: на тёмной подложке любого варианта.
 // Толщина линий — в пикселях, а не масштабом знака из спрайта: при увеличении
@@ -146,7 +140,8 @@ async function buildSet(name) {
 
   for (const w of widths) {
     const avif = path.join(IMG, `${name}-${w}.avif`);
-    await make(w).avif({ quality: alpha ? 62 : 55, effort: 6 }).toFile(avif);
+    // 4:2:0 — у AVIF по умолчанию 4:4:4: вдвое тяжелее при той же видимой разнице
+    await make(w).avif({ quality: alpha ? 62 : 55, effort: 6, chromaSubsampling: '4:2:0' }).toFile(avif);
     log(avif, w, height(w));
     const webp = path.join(IMG, `${name}-${w}.webp`);
     // alphaQuality 90 — край волос и пальцев без «ступенек»
@@ -209,8 +204,10 @@ function textPath(fonts, str, { size, weight, x, y, fill, tracking = 0 }) {
 
 async function ogCover(fonts, makePortrait) {
   const W = 1200, H = 630;
-  const ph = 470, pw = Math.round(ph * 0.8);           // портрет 4 : 5
-  const px = W - 80 - pw, py = (H - ph) / 2;
+  // Портрет первого экрана без рамки: низ и бока уже растворяются (растушёвка
+  // в вырезке), поэтому снимок просто стоит на зелёном поле у нижнего канта
+  const pw = 560, ph = Math.round(pw * SETS.hero.ratio);
+  const px = 616, py = H - 28 - ph;
   const x = 88;
 
   const parts = [
@@ -222,25 +219,31 @@ async function ogCover(fonts, makePortrait) {
     textPath(fonts, 'Санкт-Петербург · Великий Новгород', { size: 24, weight: 450, x, y: 512, fill: C.muted }),
     textPath(fonts, '+7 (921) 730-03-05', { size: 32, weight: 600, x, y: 560, fill: C.accentText })
   ];
+  // человек занимает середину кадра: слева от него ≥ 25 % ширины снимка — пустое поле
   const widest = Math.max(...parts.map((p) => p.width));
-  if (x + widest > px - 32) console.log(`  ! текст (${Math.round(x + widest)} px) заходит на портрет (${px} px)`);
+  if (x + widest > px + pw * 0.25 - 24) console.log(`  ! текст (${Math.round(x + widest)} px) подходит к портрету`);
 
-  // Без фона: зелёное поле даёт sharp.create, а этот слой ложится поверх портрета
+  // Мягкое свечение за головой — как в первом экране сайта
+  const glow = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
+  <defs><radialGradient id="g" cx="${px + pw / 2}" cy="${py + ph * 0.36}" r="${ph * 0.62}" gradientUnits="userSpaceOnUse">
+    <stop offset="0" stop-color="#FFFFFF" stop-opacity="0.13"/><stop offset="0.64" stop-color="#FFFFFF" stop-opacity="0.04"/><stop offset="1" stop-color="#FFFFFF" stop-opacity="0"/>
+  </radialGradient></defs>
+  <rect width="${W}" height="${H}" fill="url(#g)"/>
+</svg>`;
+
+  // Кант и текст — поверх снимка
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}">
   <rect x="20.5" y="20.5" width="${W - 41}" height="${H - 41}" fill="none" stroke="${C.accent}" stroke-opacity="0.55" stroke-width="1.5"/>
   <rect x="27.5" y="27.5" width="${W - 55}" height="${H - 55}" fill="none" stroke="${C.accent}" stroke-opacity="0.35" stroke-width="1"/>
   <rect x="${x}" y="344" width="80" height="1.5" fill="${C.accent}"/>
   <rect x="${x}" y="348.5" width="80" height="1.5" fill="${C.accent}"/>
   ${parts.map((p) => p.svg).join('\n  ')}
-  <rect x="${px + 10.5}" y="${py + 10.5}" width="${pw - 21}" height="${ph - 21}" fill="none" stroke="${C.accent}" stroke-opacity="0.7" stroke-width="1"/>
 </svg>`;
 
-  const photo = await makePortrait(pw).resize(pw, ph).png().toBuffer();
-  const frame = Buffer.from(svg);
+  const photo = await makePortrait(pw).png().toBuffer();
   const out = path.join(IMG, 'og-cover.jpg');
-  // Портрет кладётся под SVG: рамка-кант рисуется поверх снимка
   await sharp({ create: { width: W, height: H, channels: 3, background: C.plate } })
-    .composite([{ input: photo, left: px, top: py }, { input: frame, left: 0, top: 0 }])
+    .composite([{ input: Buffer.from(glow), left: 0, top: 0 }, { input: photo, left: px, top: py }, { input: Buffer.from(svg), left: 0, top: 0 }])
     .jpeg({ quality: 86, mozjpeg: true, progressive: true })
     .toFile(out);
   console.log('→ og-cover');
@@ -298,8 +301,7 @@ async function favicon() {
 }
 
 (async () => {
-  await buildSet('hero');
-  const makePortrait = await buildSet('about');
+  const makePortrait = await buildSet('hero');
   const fonts = await loadFonts();
   await ogCover(fonts, makePortrait);
   await favicon();
