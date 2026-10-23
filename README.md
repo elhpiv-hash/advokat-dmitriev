@@ -23,7 +23,7 @@ bash build.sh          # CSS/JS → *.min.*, домен, ?v=, CSP, sitemap, dist
 | Яндекс.Метрика | `METRIKA_ID` в начале `js/main.js` (пусто — Метрики и плашки cookie нет) | `bash build.sh` |
 | Яндекс.Вебмастер | `YANDEX_VERIFICATION` в `build.sh` — только значение `content` | `bash build.sh` |
 | Ссылка на студию в подвале | `STUDIO_URL` в `build.sh` (пусто — просто текст) | `bash build.sh` |
-| MAX | `max: 'ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX'` в `SITE` (`js/main.js`) → `'https://max.ru/…'`. Только здесь: `build.sh` сам перенесёт адрес в `href` всех ссылок MAX и в `sameAs` JSON-LD. Пока стоит заглушка, кнопки MAX видны, но ведут на страницу 404, а `build.sh` пишет предупреждение | `bash build.sh` |
+| MAX | В `SITE` (`js/main.js`): `maxPhone` / `maxPhoneText` — номер, `max` — ссылка на профиль. Пока `max: ''`, кнопки MAX копируют номер в буфер и показывают «Номер скопирован — найдите его в MAX» (по номеру MAX ссылок не открывает). Задан `'https://max.ru/u/…'` — кнопки ведут на профиль, `build.sh` добавит его в `sameAs` | `bash build.sh` |
 | Телефоны, почта, Telegram | объект `SITE` в `js/main.js` + запасные значения в разметке и JSON-LD | `bash build.sh` |
 | Фото | первый экран — `assets/img/src/hero-cutout.png` (в полный рост, без фона, 2 : 3); «Об адвокате» — `about.jpg` (10 : 13) | `bash build-images.sh`, затем `bash build.sh` |
 
@@ -118,8 +118,7 @@ bash tools/publish-pages.sh
 - [ ] В Вебмастере: «Индексирование» → «Файлы Sitemap» → `https://advokat-dan.online/sitemap.xml`.
 - [ ] Ссылку на сайт — в карточки Яндекс Бизнес (оба офиса), 2ГИС (оба офиса)
       и в профиль на HARANT.
-- [ ] **До публикации:** ссылку на профиль MAX — в `SITE.max` (`js/main.js`) вместо
-      `ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX`, `bash build.sh`. С заглушкой кнопки MAX
-      (первый экран, контакты, мобильная панель, подвал, меню) ведут на 404.
+- [ ] Когда клиент пришлёт ссылку на профиль MAX — вписать в `SITE.max` (`js/main.js`),
+      `bash build.sh`. До этого кнопки MAX копируют номер — так и задумано.
 - [ ] Дата редакции политики (`privacy/index.html`, сейчас 23 октября 2026 г.) —
       поставить фактическую дату публикации, если она другая.

@@ -23,11 +23,13 @@
   const SITE = Object.freeze({
     phone: '+79217300305',
     phoneText: '+7 (921) 730-03-05',
-    // MAX: ссылка на профиль адвоката — ЕДИНСТВЕННОЕ место, где её менять
-    // (например 'https://max.ru/…'). build.sh переносит её в запасные href
-    // разметки и в sameAs JSON-LD. Пока здесь заглушка, ссылки MAX ведут на 404.
-    max: 'ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX',
-    maxText: '+7 (952) 482-55-55',
+    // MAX. По номеру MAX ссылок не открывает, поэтому кнопки MAX копируют
+    // maxPhone в буфер обмена и подсказывают найти его в MAX (initMax).
+    maxPhone: '+79217300305',
+    maxPhoneText: '+7 (921) 730-03-05',
+    // Ссылка на профиль MAX, например 'https://max.ru/u/…'. Задана — кнопки MAX
+    // становятся обычными ссылками на профиль, а build.sh добавит её в sameAs.
+    max: '',
     // Telegram открывается по номеру основного телефона
     telegram: 'https://t.me/+79217300305',
     telegramText: '+7 (921) 730-03-05',
@@ -81,8 +83,7 @@
     const apply = {
       'phone-link': function (el) { el.href = 'tel:' + SITE.phone; },
       'phone-text': function (el) { el.textContent = SITE.phoneText; },
-      'max-link': function (el) { el.href = SITE.max; },
-      'max-text': function (el) { el.textContent = SITE.maxText; },
+      'max-phone-text': function (el) { el.textContent = SITE.maxPhoneText; },
       'telegram-link': function (el) { el.href = SITE.telegram; },
       'telegram-text': function (el) { el.textContent = SITE.telegramText; },
       'email-link': function (el) { el.href = 'mailto:' + SITE.email; },
@@ -93,6 +94,92 @@
       const setter = apply[el.dataset.site];
       if (setter) setter(el);
     });
+  }
+
+
+  /* ----- MAX: копирование номера или ссылка на профиль ----- */
+
+  /**
+   * В разметке кнопки MAX — ссылки на раздел контактов: без JS там виден номер.
+   * Задан профиль (SITE.max) — кнопки ведут на него. Нет — становятся кнопками,
+   * которые копируют номер в буфер обмена и показывают подсказку.
+   */
+  function initMax() {
+    const items = document.querySelectorAll('[data-max]');
+    if (!items.length) return;
+
+    if (/^https:\/\/\S+$/.test(SITE.max)) {
+      items.forEach(function (link) {
+        link.href = SITE.max;
+        link.target = '_blank';
+        link.rel = 'noopener';
+      });
+      return;
+    }
+
+    const toast = createToast();
+
+    items.forEach(function (link) {
+      // Действие на странице, а не переход: нужна настоящая кнопка
+      // (Space, роль для скринридера), поэтому ссылку заменяем
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.className = link.className;
+      button.dataset.max = '';
+      button.setAttribute('aria-label', 'MAX: скопировать номер ' + SITE.maxPhoneText);
+      while (link.firstChild) button.appendChild(link.firstChild);
+
+      button.addEventListener('click', function () {
+        copyText(SITE.maxPhone).then(function () {
+          toast.show('Номер скопирован\u00a0— найдите его в\u00a0MAX', 3000);
+        }, function () {
+          // Буфер недоступен (старый браузер, запрет во встроенном браузере
+          // мессенджера) — показываем номер, дольше: его нужно успеть прочитать
+          toast.show('Номер для MAX: ' + SITE.maxPhoneText, 6000);
+        });
+      });
+
+      link.replaceWith(button);
+    });
+  }
+
+  // Clipboard API есть только в защищённом контексте (https, localhost)
+  function copyText(text) {
+    if (!navigator.clipboard || !window.isSecureContext) return Promise.reject();
+    return navigator.clipboard.writeText(text);
+  }
+
+  /**
+   * Короткое уведомление внизу экрана. role="status" — скринридер прочитает
+   * текст, не перебивая. Область создаётся сразу и дальше только меняет текст:
+   * появление уже заполненной live-области читается не всеми скринридерами.
+   */
+  function createToast() {
+    const el = document.createElement('div');
+    el.className = 'toast';
+    el.setAttribute('role', 'status');
+    document.body.appendChild(el);
+
+    let timer = 0;
+
+    return {
+      show: function (text, ms) {
+        window.clearTimeout(timer);
+        el.textContent = '';
+
+        // Текст — отдельной задачей: тогда и повтор того же сообщения прочитается
+        timer = window.setTimeout(function () {
+          el.textContent = text;
+          el.classList.add('toast--visible');
+
+          timer = window.setTimeout(function () {
+            el.classList.remove('toast--visible');
+            // после исчезновения текст не должен попадаться при чтении страницы
+            timer = window.setTimeout(function () { el.textContent = ''; }, 400);
+          }, ms);
+        }, 50);
+      }
+    };
   }
 
 
@@ -526,7 +613,7 @@
       ['a[href^="tel:"]', 'click_phone'],
       ['a[href^="mailto:"]', 'click_email'],
       ['a[href*="t.me/"]', 'click_telegram'],
-      ['[data-site="max-link"]', 'click_max']
+      ['[data-max]', 'click_max']
     ];
 
     document.addEventListener('click', function (event) {
@@ -597,6 +684,7 @@
      порядок инициализации и зависимости между модулями. */
   document.addEventListener('DOMContentLoaded', function () {
     initContacts();
+    initMax();
     const header = initHeader();
     initScrollSpy();
     initMenu();
