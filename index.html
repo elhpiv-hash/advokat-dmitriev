@@ -40,16 +40,17 @@
 
   <!-- Preload фото первого экрана: это самый крупный элемент (LCP).
        imagesrcset и imagesizes совпадают с <source> фото — иначе браузер
-       выберет по ним другой файл и скачает оба. Ширина на десктопе — 2/3 от
-       1.25 высоты первого экрана без шапки и цоколя (9.5rem), на телефоне — до 26 rem. -->
+       выберет по ним другой файл и скачает оба. Ширина на десктопе ≈ высоте
+       первого экрана без шапки и цоколя (9.5rem): кадр почти квадратный и стоит
+       на 94 % этой высоты; на телефоне — до 26 rem. -->
   <link rel="preload" as="image" type="image/avif" fetchpriority="high"
-        imagesrcset="assets/img/hero-480.avif 480w, assets/img/hero-852.avif 852w"
-        imagesizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.833), min(100vw, 26rem)">
+        imagesrcset="assets/img/hero-480.avif 480w, assets/img/hero-960.avif 960w"
+        imagesizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.96), min(100vw, 26rem)">
 
   <!-- Подключаются только минифицированные файлы (их собирает build.sh).
        ?v= — хеш содержимого файла, его тоже ставит build.sh: статика кэшируется
        на год (immutable), и новый хеш сразу обходит кэш. -->
-  <link rel="stylesheet" href="css/style.min.css?v=7753379c09">
+  <link rel="stylesheet" href="css/style.min.css?v=8698e0eed3">
 
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -266,20 +267,21 @@
          из видимого заголовка (aria-labelledby), так у всех. -->
     <section class="hero theme-hero" id="top" aria-labelledby="hero-title">
       <div class="hero__inner container">
-        <!-- Фото в полный рост без фона: build-images.sh собирает эти файлы из
-             assets/img/src/hero-cutout.png (вырезка из hero.jpg — tools/cutout.py).
+        <!-- Портрет без фона: build-images.sh собирает эти файлы из
+             assets/img/src/hero-cutout.png (вырезка из hero-new.jpg — tools/cutout.py;
+             небо над головой срезано, плечи и низ растворяются к краям кадра).
              Прозрачные AVIF/WebP, запасной — PNG (у JPG нет прозрачности).
              Без рамки; на десктопе — справа на всю высоту, на телефоне — сверху.
              Не lazy и fetchpriority="high": это LCP. -->
         <figure class="hero__figure">
           <picture>
             <source type="image/avif"
-                    srcset="assets/img/hero-480.avif 480w, assets/img/hero-852.avif 852w"
-                    sizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.833), min(100vw, 26rem)">
+                    srcset="assets/img/hero-480.avif 480w, assets/img/hero-960.avif 960w"
+                    sizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.96), min(100vw, 26rem)">
             <source type="image/webp"
-                    srcset="assets/img/hero-480.webp 480w, assets/img/hero-852.webp 852w"
-                    sizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.833), min(100vw, 26rem)">
-            <img class="hero__photo" src="assets/img/hero-640.png" width="852" height="1278"
+                    srcset="assets/img/hero-480.webp 480w, assets/img/hero-960.webp 960w"
+                    sizes="(min-width: 64em) and (min-aspect-ratio: 5/4) calc((100vh - 9.5rem) * 0.96), min(100vw, 26rem)">
+            <img class="hero__photo" src="assets/img/hero-640.png" width="960" height="943"
                  alt="Дмитриев Александр Николаевич, адвокат" fetchpriority="high">
           </picture>
         </figure>
@@ -679,32 +681,18 @@
     <!-- ===== 9. ОБ АДВОКАТЕ ===== -->
     <section class="section theme-paper" id="about" aria-labelledby="about-title">
       <div class="container about">
-        <!-- Портрет за столом (assets/img/src/about.jpg → build-images.sh), кадр
-             10 : 13 целиком. В первом экране — фото в полный рост. На десктопе
-             колонка со снимком липкая; loading="lazy": раздел далеко от первого экрана. -->
-        <figure class="about__photo">
-          <picture>
-            <source type="image/avif"
-                    srcset="assets/img/about-480.avif 480w, assets/img/about-800.avif 800w, assets/img/about-978.avif 978w"
-                    sizes="(min-width: 30em) 24rem, calc(100vw - 2.5rem)">
-            <source type="image/webp"
-                    srcset="assets/img/about-480.webp 480w, assets/img/about-800.webp 800w, assets/img/about-978.webp 978w"
-                    sizes="(min-width: 30em) 24rem, calc(100vw - 2.5rem)">
-            <img class="about__img" src="assets/img/about-800.jpg" width="800" height="1040"
-                 alt="Дмитриев Александр Николаевич, адвокат" loading="lazy" decoding="async">
-          </picture>
-        </figure>
+        <!-- Без портрета: фото адвоката — в первом экране. Заголовок во всю ширину,
+             под ним на десктопе две колонки: слева крупная цитата, справа текст. -->
+        <h2 class="section__title about__title" id="about-title">Об&nbsp;адвокате</h2>
+
+        <!-- Цитата из профиля на HARANT, слово в слово. Кавычки — висячие:
+             текст выравнивается по левому краю колонки, а «ёлочка» выносится
+             на поля, как в книжном наборе. -->
+        <blockquote class="about__quote">
+          <p>Убеждён, что сила&nbsp;— в&nbsp;правде, за&nbsp;которую стоит бороться.</p>
+        </blockquote>
 
         <div class="about__body">
-          <h2 class="section__title" id="about-title">Об&nbsp;адвокате</h2>
-
-          <!-- Цитата из профиля на HARANT, слово в слово. Кавычки — висячие:
-               текст выравнивается по левому краю колонки, а «ёлочка» выносится
-               на поля, как в книжном наборе. -->
-          <blockquote class="about__quote">
-            <p>Убеждён, что сила&nbsp;— в&nbsp;правде, за&nbsp;которую стоит бороться.</p>
-          </blockquote>
-
           <div class="about__text">
             <p>Я&nbsp;адвокат Адвокатской палаты города <span class="nowrap">Санкт-Петербурга</span>, стаж&nbsp;— более 22&nbsp;лет. Специализируюсь на&nbsp;гражданском и&nbsp;семейном праве, веду арбитражные споры. Представлял интересы клиентов в&nbsp;арбитражных судах и&nbsp;судах общей юрисдикции.</p>
             <p>Работаю в&nbsp;<span class="nowrap">Санкт-Петербурге</span> и&nbsp;Великом Новгороде, в&nbsp;каждом городе есть офис. Встречаюсь с&nbsp;клиентами по&nbsp;записи, при необходимости выезжаю сам или консультирую онлайн. Работаю по&nbsp;договору.</p>
