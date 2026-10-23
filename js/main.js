@@ -23,10 +23,11 @@
   const SITE = Object.freeze({
     phone: '+79217300305',
     phoneText: '+7 (921) 730-03-05',
-    // MAX (мессенджер VK): ссылка на профиль адвоката — ЕДИНСТВЕННОЕ место,
-    // куда её вставить, вместо MAX_URL_TODO (например 'https://max.ru/…').
-    // Пока здесь не адрес https://…, кнопки и строка MAX на сайте скрыты.
-    max: 'MAX_URL_TODO',
+    // MAX: ссылка на профиль адвоката — ЕДИНСТВЕННОЕ место, где её менять
+    // (например 'https://max.ru/…'). build.sh переносит её в запасные href
+    // разметки и в sameAs JSON-LD. Пока здесь заглушка, ссылки MAX ведут на 404.
+    max: 'ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX',
+    maxText: '+7 (952) 482-55-55',
     // Telegram открывается по номеру основного телефона
     telegram: 'https://t.me/+79217300305',
     telegramText: '+7 (921) 730-03-05',
@@ -77,11 +78,11 @@
   /* ----- Контакты из SITE ----- */
 
   function initContacts() {
-    const hasMax = /^https:\/\/\S+$/.test(SITE.max);
     const apply = {
       'phone-link': function (el) { el.href = 'tel:' + SITE.phone; },
       'phone-text': function (el) { el.textContent = SITE.phoneText; },
-      'max-link': function (el) { if (hasMax) el.href = SITE.max; },
+      'max-link': function (el) { el.href = SITE.max; },
+      'max-text': function (el) { el.textContent = SITE.maxText; },
       'telegram-link': function (el) { el.href = SITE.telegram; },
       'telegram-text': function (el) { el.textContent = SITE.telegramText; },
       'email-link': function (el) { el.href = 'mailto:' + SITE.email; },
@@ -92,13 +93,6 @@
       const setter = apply[el.dataset.site];
       if (setter) setter(el);
     });
-
-    // Кнопки и строка MAX размечены с hidden: показываем, только когда есть ссылка
-    if (hasMax) {
-      document.querySelectorAll('[data-max]').forEach(function (el) {
-        el.hidden = false;
-      });
-    }
   }
 
 

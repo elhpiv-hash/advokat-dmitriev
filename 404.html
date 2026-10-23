@@ -19,13 +19,13 @@
   <script>document.documentElement.classList.add('js');</script>
 
   <link rel="preload" href="/assets/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/style.min.css?v=e11b291c1a">
+  <link rel="stylesheet" href="/css/style.min.css?v=7753379c09">
 
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-  <script src="/js/main.min.js?v=0b5f0e20a2" defer></script>
+  <script src="/js/main.min.js?v=1cc8a4fb5e" defer></script>
 </head>
 <body>
   <!-- SVG-спрайт иконок: один раз в разметке, дальше <use href="#…">.
@@ -41,9 +41,7 @@
     </symbol>
     <!-- MAX — нейтральное «облачко сообщения» (Feather, message-square), а не
          фирменный знак мессенджера: монохромно, в стиле остальных иконок.
-         Сами кнопки MAX ниже — с href="#" и hidden: адрес из SITE.max ставит
-         main.js и тогда же показывает их (без href Lighthouse считает ссылку
-         неиндексируемой). -->
+         Адрес в href ссылок MAX подставляет build.sh из SITE.max (main.js). -->
     <symbol id="i-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </symbol>
@@ -125,7 +123,7 @@
             <a class="btn btn--secondary menu__mail" href="mailto:dan911777@mail.ru" data-site="email-link">
               <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>Написать на&nbsp;почту
             </a>
-            <a class="btn btn--ghost btn--sm" href="#" target="_blank" rel="noopener" data-site="max-link" data-max hidden>
+            <a class="btn btn--ghost btn--sm" href="ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX" target="_blank" rel="noopener" data-site="max-link">
               <svg class="icon" aria-hidden="true"><use href="#i-max"/></svg>MAX
             </a>
             <a class="btn btn--ghost btn--sm" href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">
@@ -180,6 +178,7 @@
       <ul class="footer__links footer__links--ext" role="list">
         <li><a href="https://harant.ru/lawyers/sankt-peterburg/dmitriev-aleksandr-nikolaevich-2/" target="_blank" rel="noopener">HARANT<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
         <li><a href="mailto:dan911777@mail.ru" data-site="email-link">Почта</a></li>
+        <li><a href="ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX" target="_blank" rel="noopener" data-site="max-link">MAX<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
         <li><a href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">Telegram<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
       </ul>
 
@@ -194,14 +193,17 @@
   </footer>
 
   <!-- ===== 14. МОБИЛЬНАЯ ПАНЕЛЬ ===== -->
-  <!-- Видна только до 768 px: звонок и почта. Пока на экране кнопки первого экрана,
+  <!-- Видна только до 768 px: звонок, почта и MAX. Пока на экране кнопки первого экрана,
        панель спрятана, чтобы не дублировать их; прячется и при клавиатуре (main.js). -->
   <aside class="mobile-bar" aria-label="Быстрая связь" data-mobile-bar>
     <a class="mobile-bar__btn mobile-bar__btn--primary" href="tel:+79217300305" data-site="phone-link">
       <svg class="icon" aria-hidden="true"><use href="#i-phone"/></svg>Позвонить
     </a>
     <a class="mobile-bar__btn" href="mailto:dan911777@mail.ru" data-site="email-link">
-      <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>Написать на&nbsp;почту
+      <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>Почта
+    </a>
+    <a class="mobile-bar__btn" href="ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX" target="_blank" rel="noopener" data-site="max-link">
+      <svg class="icon" aria-hidden="true"><use href="#i-max"/></svg>MAX
     </a>
   </aside>
 </body>

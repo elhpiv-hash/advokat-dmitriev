@@ -1006,8 +1006,7 @@ a[href^='tel:'] {
   margin-top: 0.75rem;
 }
 
-/* Мессенджеры флексом: кнопки делят строку поровну, а когда видна одна
-   (MAX без ссылки скрыт) — она на всю ширину */
+/* Мессенджеры флексом: на телефоне MAX и Telegram делят строку поровну */
 .hero__messengers,
 .contacts__messengers {
   display: flex;
@@ -2190,7 +2189,7 @@ a.footer__studio {
 }
 
 
-/* ----- Мобильная панель: звонок и почта встык ----- */
+/* ----- Мобильная панель: звонок, почта и MAX встык ----- */
 
 .mobile-bar {
   position: fixed;
@@ -2199,7 +2198,8 @@ a.footer__studio {
   left: 0;
   z-index: 40;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* «Позвонить» — главное действие и самая длинная подпись: шире двух других */
+  grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(0, 1fr));
   padding-bottom: env(safe-area-inset-bottom);
   border-top: 1px solid rgb(var(--d-accent-rgb) / 0.3);
   background-color: var(--p-deep);

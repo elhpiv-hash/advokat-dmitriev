@@ -13,7 +13,8 @@
 #  6. lastmod в sitemap.xml — сегодняшняя дата.
 #  7. Код Яндекс.Вебмастера (YANDEX_VERIFICATION) — meta в index.html,
 #     пустой — meta нет. Ссылка на студию (STUDIO_URL) — в подвале.
-#  8. dist/ — только файлы для сервера, и архив advokat-dan-online.zip
+#  8. Ссылка MAX из SITE.max (js/main.js) — в href ссылок MAX и в sameAs.
+#  9. dist/ — только файлы для сервера, и архив advokat-dan-online.zip
 #     (без .git, README, *.sh, tools/, screenshots/, assets/img/src/).
 #
 #  Запуск:   bash build.sh
@@ -156,6 +157,28 @@ for (const file of pages) {
   html[file] = html[file].replace(/<!-- studio -->[\s\S]*?<!-- \/studio -->/, `<!-- studio -->${studio}<!-- /studio -->`);
 }
 
+// MAX: ссылка из SITE.max (js/main.js) — в запасной href всех ссылок
+// data-site="max-link" (для работы без JS) и в sameAs JSON-LD главной.
+// В sameAs — только настоящий адрес https://…: заглушка там была бы ошибкой разметки.
+const maxMatch = read('js/main.js').match(/^\s*max: '([^']*)',$/m);
+if (!maxMatch) fail("в js/main.js не найдено max: '…' в SITE");
+const maxUrl = maxMatch[1].trim();
+const maxReady = /^https:\/\/[^\s"'<>]+$/.test(maxUrl);
+const unattr = (v) => v.replace(/&quot;/g, '"').replace(/&amp;/g, '&');
+const maxAttr = maxUrl.replace(/&/g, '&amp;').replace(/"/g, '&quot;');
+const maxLinkRe = /(<a [^>]*?href=")([^"]*)("[^>]*data-site="max-link")/g;
+const oldMax = unattr((maxLinkRe.exec(html['index.html']) || [])[2] || '');
+for (const file of pages) {
+  html[file] = html[file].replace(maxLinkRe, (_, a, __, c) => a + maxAttr + c);
+}
+const sameAsRe = /("sameAs": \[)([\s\S]*?)(\n {4}\])/;
+const sameAs = html['index.html'].match(sameAsRe);
+if (!sameAs) fail('в JSON-LD index.html не найден "sameAs"');
+const links = JSON.parse(`[${sameAs[2]}]`).filter((u) => u !== oldMax && u !== maxUrl);
+if (maxReady) links.push(maxUrl);
+html['index.html'] = html['index.html'].replace(sameAsRe,
+  (_, a, __, c) => a + links.map((u) => '\n      ' + JSON.stringify(u)).join(',') + c);
+
 const today = new Date().toISOString().slice(0, 10);
 sitemap = sitemap.replace(/<lastmod>[^<]*<\/lastmod>/g, `<lastmod>${today}</lastmod>`);
 
@@ -165,6 +188,9 @@ fs.writeFileSync('sitemap.xml', sitemap);
 fs.writeFileSync('.htaccess', htaccess);
 console.log(`  CSP: sha256-${cspHash}`);
 console.log(`  Вебмастер: ${verification ? 'meta добавлена' : 'код не задан — meta нет'}; студия: ${studioUrl || 'без ссылки'}`);
+console.log(maxReady
+  ? `  MAX: ${maxUrl} (ссылки и sameAs)`
+  : `  ВНИМАНИЕ, MAX: в SITE.max (js/main.js) заглушка «${maxUrl}» — ссылки MAX ведут на 404, в sameAs не добавлена`);
 NODE
 
 echo "→ dist/ и $ZIP_NAME"

@@ -23,7 +23,7 @@ bash build.sh          # CSS/JS → *.min.*, домен, ?v=, CSP, sitemap, dist
 | Яндекс.Метрика | `METRIKA_ID` в начале `js/main.js` (пусто — Метрики и плашки cookie нет) | `bash build.sh` |
 | Яндекс.Вебмастер | `YANDEX_VERIFICATION` в `build.sh` — только значение `content` | `bash build.sh` |
 | Ссылка на студию в подвале | `STUDIO_URL` в `build.sh` (пусто — просто текст) | `bash build.sh` |
-| MAX | `max: 'MAX_URL_TODO'` в `SITE` (`js/main.js`) → `'https://max.ru/…'`; пока не `https://…`, кнопки MAX скрыты | `bash build.sh` |
+| MAX | `max: 'ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX'` в `SITE` (`js/main.js`) → `'https://max.ru/…'`. Только здесь: `build.sh` сам перенесёт адрес в `href` всех ссылок MAX и в `sameAs` JSON-LD. Пока стоит заглушка, кнопки MAX видны, но ведут на страницу 404, а `build.sh` пишет предупреждение | `bash build.sh` |
 | Телефоны, почта, Telegram | объект `SITE` в `js/main.js` + запасные значения в разметке и JSON-LD | `bash build.sh` |
 | Фото | первый экран — `assets/img/src/hero-cutout.png` (в полный рост, без фона, 2 : 3); «Об адвокате» — `about.jpg` (10 : 13) | `bash build-images.sh`, затем `bash build.sh` |
 
@@ -62,7 +62,7 @@ bash build.sh
 | `click_phone` | любая ссылка «Позвонить» / номер телефона |
 | `click_email` | «Написать на почту» / адрес почты |
 | `click_telegram` | Telegram |
-| `click_max` | MAX (когда появится ссылка) |
+| `click_max` | MAX |
 
 CSP в `.htaccess` уже разрешает Метрику (`mc.yandex.ru`, `yastatic.net`).
 
@@ -118,6 +118,8 @@ bash tools/publish-pages.sh
 - [ ] В Вебмастере: «Индексирование» → «Файлы Sitemap» → `https://advokat-dan.online/sitemap.xml`.
 - [ ] Ссылку на сайт — в карточки Яндекс Бизнес (оба офиса), 2ГИС (оба офиса)
       и в профиль на HARANT.
-- [ ] Ссылку на MAX — в `SITE.max` (`js/main.js`), когда клиент пришлёт.
+- [ ] **До публикации:** ссылку на профиль MAX — в `SITE.max` (`js/main.js`) вместо
+      `ВСТАВИТЬ_ССЫЛКУ_НА_ПРОФИЛЬ_MAX`, `bash build.sh`. С заглушкой кнопки MAX
+      (первый экран, контакты, мобильная панель, подвал, меню) ведут на 404.
 - [ ] Дата редакции политики (`privacy/index.html`, сейчас 23 октября 2026 г.) —
       поставить фактическую дату публикации, если она другая.
