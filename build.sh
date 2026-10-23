@@ -13,7 +13,7 @@
 #  6. lastmod в sitemap.xml — сегодняшняя дата.
 #  7. Код Яндекс.Вебмастера (YANDEX_VERIFICATION) — meta в index.html,
 #     пустой — meta нет. Ссылка на студию (STUDIO_URL) — в подвале.
-#  8. Профиль MAX из SITE.max (js/main.js), если задан, — в sameAs JSON-LD.
+#  8. Ссылка на профиль MAX из SITE.max (js/main.js) — в href ссылок MAX и в sameAs.
 #  9. dist/ — только файлы для сервера, и архив advokat-dan-online.zip
 #     (без .git, README, *.sh, tools/, screenshots/, assets/img/src/).
 #
@@ -157,20 +157,23 @@ for (const file of pages) {
   html[file] = html[file].replace(/<!-- studio -->[\s\S]*?<!-- \/studio -->/, `<!-- studio -->${studio}<!-- /studio -->`);
 }
 
-// MAX: профиль из SITE.max (js/main.js) — в sameAs JSON-LD главной. Пустой —
-// кнопки MAX копируют номер, в sameAs MAX нет. Прежняя ссылка на max.ru из sameAs
-// убирается, так что смена или удаление профиля не оставляет старый адрес.
+// MAX: ссылка на профиль из SITE.max (js/main.js) — в href всех ссылок
+// data-site="max-link" (запасной вариант без JS) и в sameAs JSON-LD главной.
+// Прежняя ссылка на max.ru из sameAs убирается: смена профиля не оставит старый адрес.
 const maxMatch = read('js/main.js').match(/^\s*max: '([^']*)',$/m);
 if (!maxMatch) fail("в js/main.js не найдено max: '…' в SITE");
 const maxUrl = maxMatch[1].trim();
-const maxReady = /^https:\/\/[^\s"'<>]+$/.test(maxUrl);
-if (maxUrl && !maxReady) fail(`SITE.max «${maxUrl}» — нужен адрес https://… или пустая строка`);
+if (!/^https:\/\/[^\s"'<>]+$/.test(maxUrl)) fail(`SITE.max «${maxUrl}» — нужна ссылка на профиль https://…`);
+const maxAttr = maxUrl.replace(/&/g, '&amp;');
+for (const file of pages) {
+  html[file] = html[file].replace(/(<a [^>]*?href=")[^"]*("[^>]*data-site="max-link")/g, (_, a, c) => a + maxAttr + c);
+}
 const isMax = (u) => u === maxUrl || /^https:\/\/([\w-]+\.)*max\.ru\//.test(u);
 const sameAsRe = /("sameAs": \[)([\s\S]*?)(\n {4}\])/;
 const sameAs = html['index.html'].match(sameAsRe);
 if (!sameAs) fail('в JSON-LD index.html не найден "sameAs"');
 const links = JSON.parse(`[${sameAs[2]}]`).filter((u) => !isMax(u));
-if (maxReady) links.push(maxUrl);
+links.push(maxUrl);
 html['index.html'] = html['index.html'].replace(sameAsRe,
   (_, a, __, c) => a + links.map((u) => '\n      ' + JSON.stringify(u)).join(',') + c);
 
@@ -183,9 +186,7 @@ fs.writeFileSync('sitemap.xml', sitemap);
 fs.writeFileSync('.htaccess', htaccess);
 console.log(`  CSP: sha256-${cspHash}`);
 console.log(`  Вебмастер: ${verification ? 'meta добавлена' : 'код не задан — meta нет'}; студия: ${studioUrl || 'без ссылки'}`);
-console.log(maxReady
-  ? `  MAX: профиль ${maxUrl} — кнопки ведут на него, адрес в sameAs`
-  : '  MAX: профиль не задан — кнопки копируют номер');
+console.log(`  MAX: ${maxUrl} (ссылки и sameAs)`);
 NODE
 
 echo "→ dist/ и $ZIP_NAME"

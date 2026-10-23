@@ -48,7 +48,7 @@
   <!-- Подключаются только минифицированные файлы (их собирает build.sh).
        ?v= — хеш содержимого файла, его тоже ставит build.sh: статика кэшируется
        на год (immutable), и новый хеш сразу обходит кэш. -->
-  <link rel="stylesheet" href="css/style.min.css?v=e394fb69c9">
+  <link rel="stylesheet" href="css/style.min.css?v=7753379c09">
 
   <link rel="icon" href="favicon.ico" sizes="32x32">
   <link rel="icon" href="assets/img/favicon.svg" type="image/svg+xml">
@@ -131,13 +131,14 @@
       "closes": "18:00"
     },
     "sameAs": [
-      "https://harant.ru/lawyers/sankt-peterburg/dmitriev-aleksandr-nikolaevich-2/"
+      "https://harant.ru/lawyers/sankt-peterburg/dmitriev-aleksandr-nikolaevich-2/",
+      "https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo"
     ]
   }
   </script>
 
   <!-- defer: скрипт качается параллельно с разбором HTML и выполняется после него. -->
-  <script src="js/main.min.js?v=768b77a050" defer></script>
+  <script src="js/main.min.js?v=6526861fd9" defer></script>
 </head>
 <body>
   <!-- Типографика: неразрывные пробелы записаны сущностью &nbsp;, чтобы их было
@@ -156,8 +157,8 @@
     </symbol>
     <!-- MAX — нейтральное «облачко сообщения» (Feather, message-square), а не
          фирменный знак мессенджера: монохромно, в стиле остальных иконок.
-         Кнопки MAX без JS ведут к контактам (там номер), с JS — копируют номер
-         или открывают профиль, если он задан в SITE.max (main.js). -->
+         Ссылка на профиль MAX — SITE.max (main.js); build.sh переносит её
+         в href всех ссылок MAX и в sameAs JSON-LD. -->
     <symbol id="i-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </symbol>
@@ -239,7 +240,7 @@
             <a class="btn btn--secondary menu__mail" href="mailto:dan911777@mail.ru" data-site="email-link">
               <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>Написать на&nbsp;почту
             </a>
-            <a class="btn btn--ghost btn--sm" href="#contacts" data-max>
+            <a class="btn btn--ghost btn--sm" href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link">
               <svg class="icon" aria-hidden="true"><use href="#i-max"/></svg>MAX
             </a>
             <a class="btn btn--ghost btn--sm" href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">
@@ -306,7 +307,7 @@
 
           <div class="hero__more" data-intro>
             <div class="hero__messengers">
-              <a class="btn btn--ghost btn--sm" href="#contacts" data-max>
+              <a class="btn btn--ghost btn--sm" href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link">
                 <svg class="icon" aria-hidden="true"><use href="#i-max"/></svg>MAX
               </a>
               <a class="btn btn--ghost btn--sm" href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">
@@ -833,7 +834,7 @@
               </div>
               <div class="contacts__row">
                 <dt class="contacts__label">MAX</dt>
-                <dd class="contacts__value"><span data-site="max-phone-text">+7 (921) 730-03-05</span></dd>
+                <dd class="contacts__value"><a class="contacts__link" href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link"><span data-site="max-phone-text">+7 (921) 730-03-05</span></a></dd>
               </div>
               <div class="contacts__row">
                 <dt class="contacts__label">Telegram</dt>
@@ -854,7 +855,7 @@
               <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>Написать на&nbsp;почту
             </a>
             <div class="contacts__messengers">
-              <a class="btn btn--ghost btn--sm" href="#contacts" data-max>
+              <a class="btn btn--ghost btn--sm" href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link">
                 <svg class="icon" aria-hidden="true"><use href="#i-max"/></svg>MAX
               </a>
               <a class="btn btn--ghost btn--sm" href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">
@@ -937,7 +938,7 @@
       <ul class="footer__links footer__links--ext" role="list">
         <li><a href="https://harant.ru/lawyers/sankt-peterburg/dmitriev-aleksandr-nikolaevich-2/" target="_blank" rel="noopener">HARANT<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
         <li><a href="mailto:dan911777@mail.ru" data-site="email-link">Почта</a></li>
-        <li><a href="#contacts" data-max>MAX</a></li>
+        <li><a href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link">MAX<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
         <li><a href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">Telegram<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
       </ul>
 
@@ -961,7 +962,7 @@
     <a class="mobile-bar__btn" href="mailto:dan911777@mail.ru" data-site="email-link">
       <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>Почта
     </a>
-    <a class="mobile-bar__btn" href="#contacts" data-max>
+    <a class="mobile-bar__btn" href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link">
       <svg class="icon" aria-hidden="true"><use href="#i-max"/></svg>MAX
     </a>
   </aside>

@@ -1958,16 +1958,14 @@ a[href^='tel:'] {
   gap: 0.25rem 1.5rem;
 }
 
-.footer__links a,
-.footer__links button {
+.footer__links a {
   display: inline-block;
   padding-block: 0.25rem;
   color: var(--d-muted);
   text-decoration: none;
 }
 
-.footer__links--ext a,
-.footer__links--ext button {
+.footer__links--ext a {
   text-decoration: underline;
   text-decoration-color: rgb(var(--d-accent-rgb) / 0.5);
 }
@@ -2252,47 +2250,6 @@ a.footer__studio {
 .mobile-bar__btn--primary {
   background-color: var(--d-accent);
   color: var(--d-cta-fg);
-}
-
-
-/* ----- Уведомление: номер MAX скопирован ----- */
-
-/* Внизу по центру, над мобильной панелью и плашкой cookie, поверх меню.
-   Скрытое — прозрачное, но остаётся в дереве доступности: иначе скринридер
-   не прочитал бы текст, появившийся в live-области. */
-.toast {
-  position: fixed;
-  bottom: calc(1rem + env(safe-area-inset-bottom));
-  left: 50%;
-  z-index: 110;
-  width: max-content;
-  max-width: calc(100% - 2rem);
-  padding: 0.75rem 1.125rem;
-  /* бронзовая рамка целиком: на тёмном цоколе уведомление не сливается с фоном */
-  border: 1px solid var(--d-accent);
-  border-radius: var(--radius);
-  background-color: var(--p-deep);
-  color: var(--d-fg);
-  box-shadow: 0 12px 32px -12px rgb(0 0 0 / 0.55);
-  font-size: var(--fs-small);
-  font-weight: 600;
-  line-height: 1.4;
-  text-align: center;
-  text-wrap: balance;   /* на телефоне — две ровные строки, а не «…его / в MAX» */
-  opacity: 0;
-  pointer-events: none;
-  transform: translate(-50%, 0.5rem);
-  transition: opacity 0.25s var(--ease-out), transform 0.25s var(--ease-out);
-}
-
-.toast--visible {
-  opacity: 1;
-  pointer-events: auto;   /* номер в уведомлении можно выделить и скопировать */
-  transform: translate(-50%, 0);
-}
-
-.has-cookie .toast {
-  bottom: calc(1rem + env(safe-area-inset-bottom) + var(--cookie-h, 0px));
 }
 
 
@@ -2744,14 +2701,6 @@ a.footer__studio {
     bottom: calc(var(--bar-h) + env(safe-area-inset-bottom));
     padding-bottom: 0.875rem;
   }
-
-  .has-mobile-bar .toast {
-    bottom: calc(0.75rem + var(--bar-h) + env(safe-area-inset-bottom));
-  }
-
-  .has-mobile-bar.has-cookie .toast {
-    bottom: calc(0.75rem + var(--bar-h) + env(safe-area-inset-bottom) + var(--cookie-h, 0px));
-  }
 }
 
 /* Наведение — только для настоящего курсора: на тач-экранах :hover «залипает» */
@@ -2802,8 +2751,7 @@ a.footer__studio {
     transform: translateX(4px);
   }
 
-  .footer__links a:hover,
-  .footer__links button:hover {
+  .footer__links a:hover {
     color: var(--d-fg);
   }
 

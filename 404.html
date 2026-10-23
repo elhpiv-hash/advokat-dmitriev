@@ -19,13 +19,13 @@
   <script>document.documentElement.classList.add('js');</script>
 
   <link rel="preload" href="/assets/fonts/geologica-cyrillic.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="/css/style.min.css?v=e394fb69c9">
+  <link rel="stylesheet" href="/css/style.min.css?v=7753379c09">
 
   <link rel="icon" href="/favicon.ico" sizes="32x32">
   <link rel="icon" href="/assets/img/favicon.svg" type="image/svg+xml">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 
-  <script src="/js/main.min.js?v=768b77a050" defer></script>
+  <script src="/js/main.min.js?v=6526861fd9" defer></script>
 </head>
 <body>
   <!-- SVG-спрайт иконок: один раз в разметке, дальше <use href="#…">.
@@ -41,8 +41,8 @@
     </symbol>
     <!-- MAX — нейтральное «облачко сообщения» (Feather, message-square), а не
          фирменный знак мессенджера: монохромно, в стиле остальных иконок.
-         Кнопки MAX без JS ведут к контактам (там номер), с JS — копируют номер
-         или открывают профиль, если он задан в SITE.max (main.js). -->
+         Ссылка на профиль MAX — SITE.max (main.js); build.sh переносит её
+         в href всех ссылок MAX и в sameAs JSON-LD. -->
     <symbol id="i-max" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
     </symbol>
@@ -124,7 +124,7 @@
             <a class="btn btn--secondary menu__mail" href="mailto:dan911777@mail.ru" data-site="email-link">
               <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>Написать на&nbsp;почту
             </a>
-            <a class="btn btn--ghost btn--sm" href="/#contacts" data-max>
+            <a class="btn btn--ghost btn--sm" href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link">
               <svg class="icon" aria-hidden="true"><use href="#i-max"/></svg>MAX
             </a>
             <a class="btn btn--ghost btn--sm" href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">
@@ -179,7 +179,7 @@
       <ul class="footer__links footer__links--ext" role="list">
         <li><a href="https://harant.ru/lawyers/sankt-peterburg/dmitriev-aleksandr-nikolaevich-2/" target="_blank" rel="noopener">HARANT<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
         <li><a href="mailto:dan911777@mail.ru" data-site="email-link">Почта</a></li>
-        <li><a href="/#contacts" data-max>MAX</a></li>
+        <li><a href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link">MAX<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
         <li><a href="https://t.me/+79217300305" target="_blank" rel="noopener" data-site="telegram-link">Telegram<span class="sr-only"> (откроется в&nbsp;новой вкладке)</span></a></li>
       </ul>
 
@@ -203,7 +203,7 @@
     <a class="mobile-bar__btn" href="mailto:dan911777@mail.ru" data-site="email-link">
       <svg class="icon" aria-hidden="true"><use href="#i-mail"/></svg>Почта
     </a>
-    <a class="mobile-bar__btn" href="/#contacts" data-max>
+    <a class="mobile-bar__btn" href="https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo" target="_blank" rel="noopener" data-site="max-link">
       <svg class="icon" aria-hidden="true"><use href="#i-max"/></svg>MAX
     </a>
   </aside>
