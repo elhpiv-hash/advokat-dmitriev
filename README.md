@@ -24,7 +24,7 @@ bash build.sh          # CSS/JS → *.min.*, домен, ?v=, CSP, sitemap, dist
 | Яндекс.Вебмастер | `YANDEX_VERIFICATION` в `build.sh` — только значение `content` | `bash build.sh` |
 | Ссылка на студию в подвале | `STUDIO_URL` в `build.sh` (пусто — просто текст) | `bash build.sh` |
 | MAX | `max` в `SITE` (`js/main.js`) — ссылка на профиль (`https://max.ru/u/…`); `build.sh` сам переносит её в `href` всех ссылок MAX и в `sameAs` JSON-LD. `maxPhoneText` — номер-подпись в контактах | `bash build.sh` |
-| Телефоны, почта, Telegram | объект `SITE` в `js/main.js` + запасные значения в разметке и JSON-LD | `bash build.sh` |
+| Телефоны, почта, WhatsApp | объект `SITE` в `js/main.js` + запасные значения в разметке и JSON-LD | `bash build.sh` |
 | Фото | первый экран — `assets/img/src/hero-cutout.png` (в полный рост, без фона, 2 : 3); «Об адвокате» — `about.jpg` (10 : 13) | `bash build-images.sh`, затем `bash build.sh` |
 
 Шапка, подвал, плашка cookie и мобильная панель повторены в трёх страницах
@@ -61,7 +61,7 @@ bash build.sh
 |---|---|
 | `click_phone` | любая ссылка «Позвонить» / номер телефона |
 | `click_email` | «Написать на почту» / адрес почты |
-| `click_telegram` | Telegram |
+| `click_whatsapp` | WhatsApp |
 | `click_max` | MAX |
 
 CSP в `.htaccess` уже разрешает Метрику (`mc.yandex.ru`, `yastatic.net`).

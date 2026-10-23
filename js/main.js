@@ -28,9 +28,9 @@
     max: 'https://max.ru/u/f9LHodD0cOLmEhBS0eUJTvw8-H2b3fWjQTTqWOR5R-0BDjd1Yk-TYRBGBNo',
     // номер, под которым адвокат в MAX, — подпись ссылки в контактах
     maxPhoneText: '+7 (921) 730-03-05',
-    // Telegram открывается по номеру основного телефона
-    telegram: 'https://t.me/+79217300305',
-    telegramText: '+7 (921) 730-03-05',
+    // WhatsApp — номер из профиля на HARANT
+    whatsapp: 'https://wa.me/79524825555',
+    whatsappText: '+7 (952) 482-55-55',
     email: 'dan911777@mail.ru'
   });
 
@@ -83,8 +83,8 @@
       'phone-text': function (el) { el.textContent = SITE.phoneText; },
       'max-link': function (el) { el.href = SITE.max; },
       'max-phone-text': function (el) { el.textContent = SITE.maxPhoneText; },
-      'telegram-link': function (el) { el.href = SITE.telegram; },
-      'telegram-text': function (el) { el.textContent = SITE.telegramText; },
+      'whatsapp-link': function (el) { el.href = SITE.whatsapp; },
+      'whatsapp-text': function (el) { el.textContent = SITE.whatsappText; },
       'email-link': function (el) { el.href = 'mailto:' + SITE.email; },
       'email-text': function (el) { el.textContent = SITE.email; }
     };
@@ -525,7 +525,7 @@
     const goals = [
       ['a[href^="tel:"]', 'click_phone'],
       ['a[href^="mailto:"]', 'click_email'],
-      ['a[href*="t.me/"]', 'click_telegram'],
+      ['a[href*="wa.me/"]', 'click_whatsapp'],
       ['[data-site="max-link"]', 'click_max']
     ];
 

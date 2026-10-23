@@ -1006,7 +1006,7 @@ a[href^='tel:'] {
   margin-top: 0.75rem;
 }
 
-/* Мессенджеры флексом: на телефоне MAX и Telegram делят строку поровну */
+/* Мессенджеры флексом: на телефоне MAX и WhatsApp делят строку поровну */
 .hero__messengers,
 .contacts__messengers {
   display: flex;
